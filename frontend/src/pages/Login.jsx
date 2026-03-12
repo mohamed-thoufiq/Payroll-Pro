@@ -103,7 +103,7 @@ const Login = () => {
 
       {/* Left Side: Carousel (Hidden on Mobile) */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-indigo-900">
-      <DemoBanner role="employee" />
+      <DemoBanner role="admin" />
         {slides.map((slide, index) => (
           <div
             key={index}
