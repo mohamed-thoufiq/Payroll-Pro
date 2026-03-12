@@ -39,7 +39,9 @@ app.use(session({
   secret: process.env.JWT_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false } // Use true in production with HTTPS
+  cookie: {
+  secure: process.env.NODE_ENV === "production"
+}
 }));
 
 // Passport middleware
@@ -71,7 +73,7 @@ const PORT = process.env.PORT || 5000;
 try {
   await connectDB();
   server.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`);
+    console.log(`✅ Server running on port ${PORT}`);
   });
 } catch (err) {
   console.error('❌ Failed to start server:', err);
