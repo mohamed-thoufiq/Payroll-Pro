@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { X, Eye, Trash2, Search, Filter, ToggleLeft,ToggleRight} from "lucide-react";
-
+import { API_URL } from "../../../config/api";
 const ITEMS_PER_PAGE = 5;
 
 // Professional Tax Slabs (Logic untouched)

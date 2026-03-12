@@ -3,6 +3,7 @@ import { FiFileText, FiEye, FiX, FiDownload, FiInfo } from "react-icons/fi";
 import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { API_URL } from "../../../config/api";
 
 export default function Payslips() {
   const [payslips, setPayslips] = useState([]);

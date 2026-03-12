@@ -8,6 +8,7 @@ import {
   MdChevronRight,
   MdAccessTime
 } from "react-icons/md"; 
+import { API_URL } from "../../../config/api";
 
 export default function Header({ title, setIsMobileOpen }) {
   const navigate = useNavigate();

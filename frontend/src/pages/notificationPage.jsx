@@ -3,6 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import { io } from "socket.io-client";
 import { FiBell, FiCheckCircle, FiClock, FiTrash2 } from "react-icons/fi";
 import api from "../utils/api";
+import { API_URL } from "../../../config/api";
 
 export default function NotificationCenter() {
   const { user, token } = useContext(AuthContext);

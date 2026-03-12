@@ -9,6 +9,7 @@ import {
  
 } from "react-icons/md";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { API_URL } from "../../../config/api";
 
 export default function Dashboard() {
   const { token } = useContext(AuthContext);

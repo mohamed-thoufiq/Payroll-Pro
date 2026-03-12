@@ -7,7 +7,7 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-
+import { API_URL } from "../../../config/api";
 
 export default function SalaryStructure() {
   const { token, user } = useContext(AuthContext);

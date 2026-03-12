@@ -6,6 +6,7 @@ import { useEmployeeForm } from "../context/EmployeeFormContext";
 import { useState, useContext, useEffect } from "react"; 
 import { AuthContext } from '..//..//..//context/AuthContext';
 import { MdInfoOutline, MdLockOutline, MdEmail, MdBadge } from "react-icons/md";
+import { API_URL } from "../../../config/api";
 
 const BasicDetails = ({ onNext }) => {
   const { update, employee } = useEmployeeForm();

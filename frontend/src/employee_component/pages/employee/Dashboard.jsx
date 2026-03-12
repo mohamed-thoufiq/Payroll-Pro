@@ -3,6 +3,7 @@ import { AuthContext } from "../../../context/AuthContext";
 import { FiTrendingUp, FiPieChart, FiArrowDownRight, FiFileText, FiActivity, FiArrowRight } from "react-icons/fi";
 import axios from "axios";
 import KpiCard from '../../../components/kpiCard.jsx';
+import { API_URL } from "../../../config/api";
 
 export default function Dashboard() {
   const { user, token } = useContext(AuthContext);

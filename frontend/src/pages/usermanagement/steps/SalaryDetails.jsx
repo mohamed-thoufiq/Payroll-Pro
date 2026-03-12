@@ -5,6 +5,7 @@ import { useEmployeeForm } from "../context/EmployeeFormContext";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../context/AuthContext";
 import { MdPayments, MdArrowBack, MdArrowForward } from "react-icons/md";
+import { API_URL } from "../../../config/api";
 
 const SalaryDetails = ({ onNext, onBack }) => {
   const { update, employee } = useEmployeeForm();
