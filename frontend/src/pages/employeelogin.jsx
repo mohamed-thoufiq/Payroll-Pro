@@ -13,8 +13,8 @@ const EmployeeLogin = () => {
 
   const navigate = useNavigate();
   const { employeeLogin } = useContext(AuthContext);
-  
-<DemoBanner role="employee" />
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -46,6 +46,7 @@ const EmployeeLogin = () => {
 
       {/* LEFT: LOGIN FORM */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center bg-white px-8 lg:px-24">
+      <DemoBanner role="employee" />
       <button
   onClick={() => navigate("/login")}
   className="absolute top-6 left-6 flex items-center gap-2

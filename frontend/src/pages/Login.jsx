@@ -5,7 +5,7 @@ import { API_URL } from '../config/api';
 import { motion } from "framer-motion";
 import logo from "../assets/logo.svg";
 
-
+import DemoBanner from "../components/DemoBanner";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -103,6 +103,7 @@ const Login = () => {
 
       {/* Left Side: Carousel (Hidden on Mobile) */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-indigo-900">
+      <DemoBanner role="employee" />
         {slides.map((slide, index) => (
           <div
             key={index}
@@ -128,6 +129,7 @@ const Login = () => {
         ))}
         {/* Carousel Indicators */}
         <div className="absolute bottom-10 left-12 flex space-x-2">
+          
           {slides.map((_, i) => (
             <div 
               key={i} 
@@ -139,6 +141,7 @@ const Login = () => {
 
       {/* Right Side: Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16">
+      <DemoBanner role="employee" />
      <button
   onClick={() => navigate("/employeelogin")}
   className="absolute top-6 right-6 flex items-center gap-2
