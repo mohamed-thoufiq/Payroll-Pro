@@ -3,6 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
+import DemoBanner from "../components/DemoBanner";
 
 const EmployeeLogin = () => {
   const [email, setEmail] = useState("");
@@ -12,7 +13,8 @@ const EmployeeLogin = () => {
 
   const navigate = useNavigate();
   const { employeeLogin } = useContext(AuthContext);
-
+  
+<DemoBanner role="employee" />
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
