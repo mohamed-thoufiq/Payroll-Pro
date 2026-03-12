@@ -3,7 +3,7 @@ export const createEmployee = async (payload) => {
   const token = localStorage.getItem("token"); // must be stored at login
   console.log(payload);
   
-  const res = await fetch(`${API_URL}/api/users/`, {
+  const res = await fetch("http://localhost:5000/api/users/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
