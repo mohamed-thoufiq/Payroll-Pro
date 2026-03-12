@@ -1,9 +1,9 @@
 import Swal from 'sweetalert2';
-
+import { API_URL } from "../config/api";
 export const downloadReport = async (url, filename) => {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`http://localhost:5000${url}`, {
+    const res = await fetch(`${API_URL}${url}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
