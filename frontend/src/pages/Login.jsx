@@ -141,7 +141,7 @@ const Login = () => {
 
       {/* Right Side: Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16">
-      <DemoBanner role="employee" />
+      
      <button
   onClick={() => navigate("/employeelogin")}
   className="absolute top-6 right-6 flex items-center gap-2
