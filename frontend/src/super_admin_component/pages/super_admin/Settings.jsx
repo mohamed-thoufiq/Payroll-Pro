@@ -6,6 +6,7 @@ import {
   MdLocationOn, MdHome, MdInfoOutline
 } from "react-icons/md";
 
+
 export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ type: "", text: "" });
