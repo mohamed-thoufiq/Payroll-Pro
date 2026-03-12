@@ -1,5 +1,7 @@
+import { API_URL } from "../../../config/api";
 export const checkEmployeeExists = async (data) => {
   const token = localStorage.getItem("token"); // Get your JWT
+  
   
   // 1. Ensure the URL is correct (check your backend port)
   const res = await fetch(`${API_URL}/api/users/check-existence?email=${data.email}&employeeId=${data.employeeId}`, {
