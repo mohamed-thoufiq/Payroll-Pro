@@ -91,19 +91,11 @@ const Login = () => {
       transition={{ duration: 0.35, ease: "easeInOut" }}
       className="flex min-h-screen bg-white relative"
     >
-      <button
-        onClick={() => navigate("/employeelogin")}
-        className="absolute top-6 left-6 flex items-center gap-2
-                   px-4 py-2 rounded-full
-                   bg-indigo-50 text-indigo-700 font-semibold
-                   hover:bg-indigo-100 transition-all shadow-sm"
-      >
-        ← Employee Login
-      </button>
+      
 
       {/* Left Side: Carousel (Hidden on Mobile) */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-indigo-900">
-      <DemoBanner role="admin" />
+      
         {slides.map((slide, index) => (
           <div
             key={index}
@@ -141,7 +133,7 @@ const Login = () => {
 
       {/* Right Side: Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16">
-      
+      <DemoBanner role="admin" />
      <button
   onClick={() => navigate("/employeelogin")}
   className="absolute top-6 right-6 flex items-center gap-2
