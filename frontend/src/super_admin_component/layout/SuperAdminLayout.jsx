@@ -11,6 +11,12 @@ import UserManagement from "../../pages/usermanagement/UserManagement";
 import Roles from "../pages/super_admin/Roles"; 
 import Reports from "../pages/super_admin/Reports";
 import Settings from "../pages/super_admin/Settings"; 
+import PayrollRun from "../pages/super_admin/PayrollRun"; 
+import PayrollHistory from "../pages/super_admin/PayrollHistory";
+import HRReimbursementApproval from "../pages/super_admin/reimbursementApproval";
+import Notifications from "../../pages/notificationPage";
+import AttendanceApproval from "../pages/super_admin/AttendenceApproval";
+import BulkImportPage from "../../pages/usermanagement/Bulkimport";
 
 export default function SuperAdminLayout() {
   const [searchParams] = useSearchParams();
@@ -28,10 +34,24 @@ export default function SuperAdminLayout() {
         return <UserManagement operation={operation} id={id} />;
       case "roles":
         return <Roles />; 
+      case "reimbursement":
+        return <HRReimbursementApproval />; 
+      case "attendanceapprove":
+        return <AttendanceApproval />;
       case "reports":
         return <Reports />;
       case "settings":
         return <Settings />; 
+      case "run-payroll" :
+        return <PayrollRun/>
+      case "payroll-history" :
+        return <PayrollHistory/>
+      case "payroll-report" :
+        return <Reports/>
+      case "notification" :
+        return <Notifications/>
+      case "bulk" :
+        return <BulkImportPage/>
       case "dashboard":
       default:
         return <Dashboard />;
@@ -42,6 +62,7 @@ export default function SuperAdminLayout() {
     dashboard: "Dashboard",
     users: "User Management",
     roles: "Roles", 
+    attendance: "Leave Requests", 
     reports: "Reports",
     settings: "Settings", 
   };

@@ -45,10 +45,10 @@ const Unauthorized = () => {
             </Link>
             
             <Link
-              to="/"
+              to="/employeeLogin"
               className="text-slate-500 hover:text-indigo-600 font-bold text-xs uppercase tracking-widest transition-colors"
             >
-              Go to Dashboard
+              Go to Employee Login
             </Link>
           </div>
 

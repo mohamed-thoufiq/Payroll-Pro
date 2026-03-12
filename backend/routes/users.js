@@ -1,11 +1,17 @@
 import express from 'express';
 import { authenticate, authorize } from '../middleware/auth.js';
 import User from '../models/Usermodel.js';
-
+import multer from 'multer';
+import csv from 'csv-parser';
+import fs from 'fs';
+import path from 'path';
+import bcrypt from 'bcryptjs';
 
 const router = express.Router();
 const superadmin="Super Admin"
 const hradmin="HR Admin"
+
+const upload = multer({ dest: 'uploads/' });
 /**
  * GET ALL USERS (Super Admin + HR Admin)
  */
@@ -239,4 +245,185 @@ router.delete(
   }
 );
 
+
+
+router.post(
+  '/bulk-confirm',
+  authenticate,
+  authorize(superadmin, hradmin),
+  async (req, res) => {
+    try {
+      const { users } = req.body;
+
+      const createdUsers = await Promise.all(
+        users.map((row) =>
+          User.create({
+            name: [row.firstName, row.middleName, row.lastName]
+              .filter(Boolean)
+              .join(' '),
+
+            email: row.email,
+            password: row.password, // 🔐 auto-hashed by schema
+            role: row.role,
+            organizationId: req.user.organizationId,
+            onboardingCompleted: true,
+
+            employeeDetails: {
+              basic: {
+                firstName: row.firstName,
+                middleName: row.middleName,
+                lastName: row.lastName,
+                employeeId: row.employeeId,
+                doj: row.doj,
+                email: row.email,
+                mobile: row.mobile,
+                gender: row.gender,
+                location: row.location,
+                designation: row.designation,
+                department: row.department,
+              },
+              salary: {
+                ctc: Number(row.ctc) || 0,
+                basicPercentage: Number(row.basicPercentage) || 50,
+              },
+              personal: {
+                dob: row.dob,
+                fatherName: row.fatherName,
+                pan: row.pan,
+                city: row.city,
+                state: row.state,
+                pincode: row.pincode,
+              },
+              payment: {
+                mode: row.paymentMode || 'BANK',
+                details: {
+                  bankName: row.bankName,
+                  accountNumber: row.accountNumber,
+                  ifsc: row.ifsc,
+                },
+              },
+            },
+          })
+        )
+      );
+
+      res.status(201).json({
+        success: true,
+        message: `${createdUsers.length} employees imported successfully.`,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        message: 'Final insertion failed',
+      });
+    }
+  }
+);
+
+
+
+
+/**
+ * BULK IMPORT USERS (CSV)
+ * Authorize: Super Admin, HR Admin
+ */
+router.post(
+  '/bulk-import',
+  authenticate,
+  authorize(superadmin, hradmin),
+  upload.single('file'),
+  async (req, res) => {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+
+    const rawResults = [];
+    const successData = []; 
+    const failedData = [];  
+
+    fs.createReadStream(req.file.path)
+      .pipe(csv())
+      .on('data', (data) => rawResults.push(data))
+      .on('end', async () => {
+        try {
+          const validRoles = ['Super Admin', 'Payroll Admin', 'HR Admin', 'Employee', 'Finance'];
+          const validPaymentModes = ['BANK', 'CASH', 'CHEQUE'];
+
+          for (const row of rawResults) {
+            let rowErrors = [];
+
+            // 1. Structural/Shifted Data Check
+            // If the row is malformed like "Rahul,S,Bosey9988", email might be undefined or missing '@'
+            if (!row.email || !row.email.includes('@')) {
+              rowErrors.push("Malformed Row or Invalid Email (Check CSV commas)");
+            }
+
+            // 2. Schema-Specific Validation
+            if (!row.firstName) rowErrors.push("First Name is missing");
+            if (!row.employeeId) rowErrors.push("Employee ID is missing");
+            
+            // Check Enum for Role
+            if (!validRoles.includes(row.role)) {
+              rowErrors.push(`Invalid Role: "${row.role || 'Empty'}"`);
+            }
+
+            // Check Enum for Payment Mode
+            if (row.paymentMode && !validPaymentModes.includes(row.paymentMode)) {
+              rowErrors.push(`Invalid Payment Mode: "${row.paymentMode}"`);
+            }
+
+            // 3. Duplicate Check (Only if row is structurally sound)
+            if (rowErrors.length === 0) {
+              const existingUser = await User.findOne({ 
+                $or: [
+                  { email: row.email }, 
+                  { 'employeeDetails.basic.employeeId': row.employeeId }
+                ]
+              });
+
+              if (existingUser) {
+                rowErrors.push("Database Conflict: Email or Employee ID already exists");
+              }
+            }
+
+            // 4. Bucket Assignment
+            if (rowErrors.length > 0) {
+              failedData.push({
+                ...row,
+                errorDetails: rowErrors.join(' | ')
+              });
+            } else {
+              successData.push({
+                ...row,
+                status: 'READY'
+              });
+            }
+          }
+
+          fs.unlinkSync(req.file.path);
+
+          res.status(200).json({
+            success: true,
+            summary: {
+              total: rawResults.length,
+              validCount: successData.length,
+              errorCount: failedData.length
+            },
+            approved: successData,
+            actionNeeded: failedData
+          });
+
+        } catch (err) {
+          if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+          res.status(500).json({ success: false, message: 'Processing failed', error: err.message });
+        }
+      });
+  }
+);
+router.get('/download-template', (req, res) => {
+  const template = "firstName,middleName,lastName,email,password,role,employeeId,doj,mobile,gender,location,designation,department,ctc,basicPercentage,dob,fatherName,pan,addressLine1,city,state,pincode,paymentMode,bankName,accountNumber,ifsc\nRahul,Sarath,Kumar,rahul@company.com,welcome@1,Employee,EMPk102,2026-02-01,9888877777,Male,Bangalore,Engineer,IT,1200000,40,1998-08-20,Rajesh Kumar,FGHIJ5678K,456 Tech Park,Bangalore,Karnataka,560001,BANK,ICICI Bank,00040506070,ICIC0000001";
+  
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename=employee_template.csv');
+  res.status(200).send(template);
+});
 export default router;

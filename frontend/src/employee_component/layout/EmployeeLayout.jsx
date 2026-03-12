@@ -5,11 +5,12 @@ import { useState } from "react";
 // Pages
 import Dashboard from "../pages/employee/Dashboard";
 import Payslips from "../pages/employee/Payslips";
-import SalaryStructure from "../pages/employee/SalaryStructure";
-import Documents from "../pages/employee/Documents";
-import Notifications from "../pages/employee/Notifications";
-import Profile from "../pages/employee/Profile";
-import Settings from "../pages/employee/Settings";
+import SalaryStructure from "../pages/employee/SalaryStructure"; 
+import Notifications from "../../pages/notificationPage";
+import Profile from "../pages/employee/Profile"; 
+import EmployeeReimbursementForm from "../pages/employee/reimbursementFormPage";
+import MyReimbursements from "../pages/employee/myreimburese";
+import AttendanceRequest from "../pages/employee/EmployeeAttendanceRequest";
 
 
 export default function EmployeeLayout() {
@@ -20,11 +21,12 @@ export default function EmployeeLayout() {
   const renderPage = () => {
     switch (section) {
       case "payslips": return <Payslips />;
-      case "salary": return <SalaryStructure />;
-      case "documents": return <Documents />;
+      case "salary": return <SalaryStructure />; 
       case "notifications": return <Notifications />;
       case "profile": return <Profile />;
-      case "settings": return <Settings />;
+      case "reimbursement": return <EmployeeReimbursementForm />;
+      case "myreimbursement": return <MyReimbursements />;
+      case "attendence": return <AttendanceRequest />;
       default: return <Dashboard />;
     }
   };
@@ -33,10 +35,11 @@ export default function EmployeeLayout() {
     dashboard: "Dashboard",
     payslips: "My Payslips",
     salary: "Salary Structure",
-    documents: "Documents",
+    reimbursement: "Reimbursement",
+    myreimbursement: "Myreimbursement",
     notifications: "Notifications",
     profile: "Profile",
-    settings: "Settings",
+    attendence: "Leave Request",
   };
 
   return (

@@ -1,190 +1,129 @@
 import express from "express";
 import mongoose from "mongoose";
 import { authenticate, authorize } from "../middleware/auth.js";
+import PayrollRun from "../models/PayrollRun.js";
+import PayrollEmployee from "../models/PayrollEmployee.js";
 import User from "../models/Usermodel.js";
-import Organization from "../models/Organization.js";
 
 const router = express.Router();
 
-const superadmin = "Super Admin";
-const hradmin = "HR Admin";
-const payrolladmin = "Payroll Admin";
-const finance = "Finance";
+const ROLES = ["Super Admin", "HR Admin", "Payroll Admin", "Finance"];
 
-// ---------------- HELPER FUNCTIONS ----------------
-const num = (v) => (isNaN(Number(v)) ? 0 : Number(v));
-
-// Tamil Nadu Professional Tax Slab (Monthly)
-const getProfessionalTax = (monthlySalary) => {
-  if (monthlySalary <= 21000) return 0;
-  if (monthlySalary <= 30000) return 135;
-  return 200;
-};
-
-// ---------------- DASHBOARD SUMMARY ----------------
 router.get(
   "/dashboardsummary",
   authenticate,
-  authorize(superadmin, hradmin, payrolladmin, finance),
+  authorize(...ROLES),
   async (req, res) => {
     try {
-      if (!req.user?.organizationId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
       const orgId = new mongoose.Types.ObjectId(req.user.organizationId);
 
       // ===============================
-      // A. FETCH ORGANIZATION
+      // 1. LATEST PAYROLL RUN
       // ===============================
-      const org = await Organization.findById(orgId);
-      if (!org) {
-        return res.status(404).json({ message: "Organization not found" });
-      }
+      const latestRun = await PayrollRun.findOne({ organizationId: orgId })
+        .sort({ createdAt: -1 })
+        .lean();
 
-      const statutory = org.statutoryConfig || {};
+      let overview = {
+        totalEmployees: 0,
+        gross: 0,
+        deductions: 0,
+        netPay: 0,
+        avgSalary: 0,
+        status: "NOT_STARTED"
+      };
 
-      // ===============================
-      // B. PAYROLL TREND (LAST 6 MONTHS)
-      // ===============================
-      const trendData = [];
-      const today = new Date();
-
-      for (let i = 5; i >= 0; i--) {
-        const dateIterator = new Date(
-          today.getFullYear(),
-          today.getMonth() - i,
-          1
-        );
-
-        const monthName = dateIterator.toLocaleString("default", {
-          month: "short",
-        });
-
-        const endOfMonth = new Date(
-          dateIterator.getFullYear(),
-          dateIterator.getMonth() + 1,
-          0
-        );
-
-        const endOfMonthString = endOfMonth.toISOString().split("T")[0];
-
-        const monthlyStats = await User.aggregate([
-          {
-            $match: {
-              organizationId: orgId,
-              status: "Active",
-              "employeeDetails.basic.doj": { $lte: endOfMonthString },
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              monthlyPayroll: {
-                $sum: { $divide: ["$employeeDetails.salary.ctc", 12] },
-              },
-            },
-          },
-        ]);
-
-        trendData.push({
-          month: monthName,
-          payroll: Math.round(monthlyStats[0]?.monthlyPayroll || 0),
-        });
+      if (latestRun) {
+        overview = {
+          totalEmployees: latestRun.totals?.totalEmployees || 0,
+          gross: Math.round(latestRun.totals?.gross || 0),
+          deductions: Math.round(latestRun.totals?.deductions || 0),
+          netPay: Math.round(latestRun.totals?.netPay || 0),
+          avgSalary:
+            latestRun.totals?.totalEmployees > 0
+              ? Math.round(
+                  latestRun.totals.netPay /
+                    latestRun.totals.totalEmployees
+                )
+              : 0,
+          status: latestRun.status
+        };
       }
 
       // ===============================
-      // C. CURRENT EMPLOYEE STATS
+      // 2. PAYROLL TREND (LAST 6 RUNS)
       // ===============================
-      const employees = await User.find({
-        organizationId: orgId,
-        status: "Active",
-      });
-
-      const totalEmployees = employees.length;
-
-      let totalPayroll = 0;
-      let totalDeductions = 0;
-
-      employees.forEach((emp) => {
-        const ctc = num(emp?.employeeDetails?.salary?.ctc);
-        if (!ctc) return;
-
-        const monthlySalary = ctc / 12;
-        totalPayroll += monthlySalary;
-
-        let empDeduction = 0;
-
-        // PF (Employee Contribution)
-        if (statutory.pf?.enabled) {
-          empDeduction +=
-            (monthlySalary * num(statutory.pf.employeeContribution)) / 100;
-        }
-
-        // ESI (Only if salary <= wage limit)
-        if (
-          statutory.esi?.enabled &&
-          monthlySalary <= num(statutory.esi.wageLimit)
-        ) {
-          empDeduction +=
-            (monthlySalary * num(statutory.esi.employeeContribution)) / 100;
-        }
-
-        // Professional Tax (State based)
-        if (statutory.professionalTax?.enabled) {
-          empDeduction += getProfessionalTax(monthlySalary);
-        }
-
-        totalDeductions += empDeduction;
-      });
-
-      totalPayroll = Math.round(num(totalPayroll));
-      totalDeductions = Math.round(num(totalDeductions));
-
-      const avgSalary =
-        totalEmployees > 0
-          ? Math.round(totalPayroll / totalEmployees)
-          : 0;
-
-      // ===============================
-      // D. DEPARTMENT DISTRIBUTION
-      // ===============================
-      const departmentStats = await User.aggregate([
+      const payrollTrend = await PayrollRun.aggregate([
+        { $match: { organizationId: orgId } },
+        { $sort: { month: -1 } },
+        { $limit: 6 },
         {
-          $match: {
-            organizationId: orgId,
-            status: "Active",
-          },
+          $project: {
+            _id: 0,
+            month: 1,
+            netPay: "$totals.netPay"
+          }
         },
-        {
-          $group: {
-            _id: "$employeeDetails.basic.department",
-            count: { $sum: 1 },
-          },
-        },
+        { $sort: { month: 1 } }
       ]);
 
       // ===============================
-      // E. RESPONSE
+      // 3. DEPARTMENT DISTRIBUTION
+      // ===============================
+      let departmentStats = [];
+
+      if (latestRun) {
+        departmentStats = await PayrollEmployee.aggregate([
+          {
+            $match: {
+              payrollRunId: latestRun._id
+            }
+          },
+          {
+            $group: {
+              _id: "$employeeSnapshot.department",
+              count: { $sum: 1 }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              name: { $ifNull: ["$_id", "Unassigned"] },
+              value: "$count"
+            }
+          }
+        ]);
+      }
+
+      // ===============================
+      // 4. ACTIVE EMPLOYEE COUNT (ORG)
+      // ===============================
+      const activeEmployees = await User.countDocuments({
+        organizationId: orgId,
+        status: "Active",
+        role: "Employee"
+      });
+
+      // ===============================
+      // 5. RESPONSE
       // ===============================
       res.json({
-        overview: {
-          totalEmployees,
-          totalPayroll,
-          totalDeductions,
-          avgSalary,
-        },
-        departmentStats: departmentStats.map((d) => ({
-          name: d._id || "Unassigned",
-          value: d.count,
+        overview,
+        payrollTrend: payrollTrend.map((p) => ({
+          month: p.month,
+          payroll: Math.round(p.netPay || 0)
         })),
-        payrollTrend: trendData,
+        departmentStats,
+        meta: {
+          activeEmployees,
+          payrollRunExists: Boolean(latestRun)
+        }
       });
     } catch (err) {
-      console.error("Dashboard error:", err);
+      console.error("Payroll dashboard error:", err);
       res.status(500).json({
-        message: "Server Error",
-        error: err.message,
+        message: "Failed to load payroll dashboard",
+        error: err.message
       });
     }
   }

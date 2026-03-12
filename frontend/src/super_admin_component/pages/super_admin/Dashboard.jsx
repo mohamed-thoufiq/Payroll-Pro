@@ -59,18 +59,16 @@ export default function Dashboard() {
         <StatCard 
           label="Total Employees"
           value={data.overview.totalEmployees}
-          subtext="Active on payroll"
-          trend="+12%"
+          subtext="Active on payroll(Latest)" 
           icon={<MdPeople />}
           colorGradient="from-indigo-500 to-purple-600"
         />
 
         {/* Monthly Payroll - Emerald/Teal (Wealth & Success) */}
         <StatCard 
-          label="Monthly Payroll"
-          value={formatFullCurrency(data.overview.totalPayroll)}
-          subtext="Current month total"
-          trend="+3.5%"
+          label="Monthly Payroll(Gross)"
+          value={formatFullCurrency(data.overview.gross)}
+          subtext="Current month total" 
           icon={<MdAccountBalanceWallet />}
           colorGradient="from-emerald-400 to-teal-600"
         />
@@ -78,19 +76,17 @@ export default function Dashboard() {
         {/* Total Deductions - Orange/Rose (Caution & Precision) */}
         <StatCard 
           label="Total Deductions"
-          value={formatFullCurrency(data.overview.totalDeductions)}
-          subtext="Statutory deductions"
-          trend="-1.2%"
+          value={formatFullCurrency(data.overview.deductions)}
+          subtext="Statutory deductions" 
           icon={<MdAssignmentReturn />}
           colorGradient="from-orange-400 to-rose-500"
         />
 
         {/* Avg. Salary - Blue/Cyan (Clarity & Benchmark) */}
         <StatCard 
-          label="Avg. Salary"
-          value={formatFullCurrency(data.overview.avgSalary)}
-          subtext="Per employee average"
-          trend="+0.8%"
+          label="Net Payable"
+          value={formatFullCurrency(data.overview.netPay)}
+          subtext="After Deductions" 
           icon={<MdTrendingUp />}
           colorGradient="from-blue-500 to-cyan-500"
         />

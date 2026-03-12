@@ -1,5 +1,8 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import logo from "../assets/logo.svg";
 
 const EmployeeLogin = () => {
   const [email, setEmail] = useState("");
@@ -7,6 +10,7 @@ const EmployeeLogin = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
   const { employeeLogin } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
@@ -30,14 +34,34 @@ const EmployeeLogin = () => {
 
 
   return (
-    <div className="min-h-screen flex w-full">
+    <motion.div
+  initial={{ opacity: 0, x: 40 }}
+  animate={{ opacity: 1, x: 0 }}
+  exit={{ opacity: 0, x: -40 }}
+  transition={{ duration: 0.35, ease: "easeInOut" }}
+  className="min-h-screen flex w-full relative"
+>
+
       {/* LEFT: LOGIN FORM */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center bg-white px-8 lg:px-24">
+      <button
+  onClick={() => navigate("/login")}
+  className="absolute top-6 left-6 flex items-center gap-2
+             px-4 py-2 rounded-full
+             bg-indigo-50 text-indigo-700 font-semibold
+             shadow-sm
+             transition-all duration-300 ease-out
+             hover:bg-indigo-100 hover:-translate-y-0.5 hover:shadow-md
+             active:scale-95"
+>
+  ← Admin Login
+</button>
+
         <div className="w-full max-w-md space-y-8">
           {/* Header */}
           <div>
             <div className="flex items-center space-x-2 mb-2">
-              <span className="text-3xl">💼</span>
+              <img src={logo} alt="PayrollPro Logo" className="w-24 h-24 object-contain"/>
               <span className="text-xl font-bold text-gray-900">
                 PayrollPro
               </span>
@@ -122,7 +146,8 @@ const EmployeeLogin = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
+
   );
 };
 

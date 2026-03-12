@@ -17,11 +17,9 @@ export default function SalaryStructure() {
   // Professional Tax Slab Logic (Strictly preserved)
   const P_TAX_SLABS = {
     "Tamil Nadu": [
-      { limit: 12500, amount: 208 }, { limit: 10000, amount: 171 },
-      { limit: 7500,  amount: 108 }, { limit: 5000,  amount: 51 },
-      { limit: 3500,  amount: 22 },  { limit: 0,     amount: 0 }
+      { limit: 5000, amount: 200 } 
     ],
-    "Default": [{ limit: 10000, amount: 200 }, { limit: 0, amount: 0 }]
+    "Default": [{ limit: 0, amount: 100 } ]
   };
 
   // --- FETCH ORGANIZATION SETTINGS ---
@@ -32,6 +30,8 @@ export default function SalaryStructure() {
           headers: { Authorization: `Bearer ${token}` }
         });
         const result = await res.json();
+        console.log(result);
+        
         setOrgConfig(result);
       } catch (error) {
         console.error("Error fetching statutory data:", error);
@@ -45,7 +45,8 @@ export default function SalaryStructure() {
   /* ===================== CALCULATION ENGINE ===================== */
   const calculateFinalBreakdown = () => {
     if (!user || !orgConfig) return null;
-
+    console.log(user);
+    
     const ctc = user.employeeDetails?.salary?.ctc || 0;
     const monthlyGross = ctc / 12;
     

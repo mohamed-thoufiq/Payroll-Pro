@@ -42,6 +42,7 @@ const Onboarding = () => {
         },
         body: JSON.stringify(onboardingData)
       });
+      
       if (!res.ok) throw new Error("Failed to save configuration");
       
       const user = JSON.parse(localStorage.getItem('user'));

@@ -2,6 +2,10 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { API_URL } from '../config/api';
+import { motion } from "framer-motion";
+import logo from "../assets/logo.svg";
+
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -80,7 +84,23 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <motion.div
+      initial={{ opacity: 0, x: -40 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 40 }}
+      transition={{ duration: 0.35, ease: "easeInOut" }}
+      className="flex min-h-screen bg-white relative"
+    >
+      <button
+        onClick={() => navigate("/employeelogin")}
+        className="absolute top-6 left-6 flex items-center gap-2
+                   px-4 py-2 rounded-full
+                   bg-indigo-50 text-indigo-700 font-semibold
+                   hover:bg-indigo-100 transition-all shadow-sm"
+      >
+        ← Employee Login
+      </button>
+
       {/* Left Side: Carousel (Hidden on Mobile) */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-indigo-900">
         {slides.map((slide, index) => (
@@ -119,12 +139,29 @@ const Login = () => {
 
       {/* Right Side: Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16">
+     <button
+  onClick={() => navigate("/employeelogin")}
+  className="absolute top-6 right-6 flex items-center gap-2
+             px-4 py-2 rounded-full
+             bg-indigo-50 text-indigo-700 font-semibold
+             shadow-sm
+             transition-all duration-300 ease-out
+             hover:bg-indigo-100 hover:-translate-y-0.5 hover:shadow-md
+             active:scale-95"
+>
+  
+  Employee Login
+  <span className="transition-transform duration-300 group-hover:-translate-x-1">
+     →
+  </span>
+</button>
+
+
+
         <div className="w-full max-w-md">
           <div className="mb-10">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xl">
-                💼
-              </div>
+              <img src={logo} alt="PayrollPro Logo" className="w-20 h-20 object-contain"/>
               <span className="text-2xl font-bold tracking-tight text-gray-900">PayrollPro</span>
             </div>
             <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
@@ -208,7 +245,8 @@ const Login = () => {
           </p>
         </div>
       </div>
-    </div>
+    </motion.div>
+
   );
 };
 

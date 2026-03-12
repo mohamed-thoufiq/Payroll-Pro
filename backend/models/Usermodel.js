@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
     },
 
     onboardingCompleted: { type: Boolean, default: false },
-
+    
     employeeDetails: {
       basic: {
         firstName: String,
