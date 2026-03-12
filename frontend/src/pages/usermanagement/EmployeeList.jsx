@@ -50,13 +50,13 @@ const EmployeeList = () => {
       if (!token) throw new Error("User not logged in");
       const headers = { Authorization: `Bearer ${token}` };
 
-      const orgRes = await fetch("http://localhost:5000/api/organization/settings", { headers });
+      const orgRes = await fetch(`${API_URL}/api/organization/settings`, { headers });
       if (orgRes.ok) {
         const orgData = await orgRes.json();
         setOrgConfig(orgData);
       }
 
-      const empRes = await fetch("http://localhost:5000/api/users", { headers });
+      const empRes = await fetch(`${API_URL}/api/users`, { headers });
       if (empRes.ok) {
         const result = await empRes.json();
         setEmployees(Array.isArray(result.data) ? result.data : []);
@@ -153,7 +153,7 @@ const EmployeeList = () => {
     setEmployees(prev => prev.map(emp => emp._id === id ? { ...emp, status: newStatus } : emp));
     try {
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:5000/api/users/${id}/status`, {
+      await fetch(`${API_URL}/api/users/${id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: newStatus })
@@ -165,7 +165,7 @@ const EmployeeList = () => {
     if(!window.confirm("Delete employee?")) return;
     try {
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` }});
+      await fetch(`${API_URL}/api/users/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` }});
       setEmployees(prev => prev.filter(e => e._id !== id));
     } catch (e) { console.error(e); }
   };

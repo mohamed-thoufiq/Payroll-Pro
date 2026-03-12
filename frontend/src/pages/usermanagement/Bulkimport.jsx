@@ -102,7 +102,7 @@ export default function BulkImportPage() {
           </div>
         </div>
         <button 
-          onClick={() => window.open("http://localhost:5000/api/users/download-template")}
+          onClick={() => window.open(`${API_URL}/api/users/download-template`)}
           className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black text-xs shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all"
         >
           <FiDownload /> Get CSV Template

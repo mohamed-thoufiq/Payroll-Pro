@@ -29,7 +29,7 @@ export default function Header({ title, setIsMobileOpen }) {
     const fetchUnread = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/notification/unread-count",
+          `${API_URL}/api/notification/unread-count`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }
@@ -60,7 +60,7 @@ export default function Header({ title, setIsMobileOpen }) {
       
       try {
         // Replace with your actual API endpoint to fetch single org details
-        const res = await fetch(`http://localhost:5000/api/organization/settings`, {
+        const res = await fetch(`${API_URL}/api/organization/settings`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

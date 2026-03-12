@@ -31,7 +31,7 @@ import { API_URL } from '../config/api';
     
       const register = async (name, email, password, companyName) => {
         try {
-          const res = await fetch('http://localhost:5000/api/auth/register-super-admin', {
+          const res = await fetch('${API_URL}/api/auth/register-super-admin', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password, companyName })

@@ -22,7 +22,7 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:5000/api/payslips/my-payslips", {
+        const res = await axios.get(`${API_URL}/api/payslips/my-payslips`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 

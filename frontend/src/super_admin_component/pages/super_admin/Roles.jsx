@@ -32,7 +32,7 @@ export default function Roles() {
   // --- 1. Fetch Data (Logic preserved) ---
   const fetchSettings = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/organization/settings", {
+      const res = await fetch(`${API_URL}/api/organization/settings`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -64,7 +64,7 @@ export default function Roles() {
     }
     setSubmitting(true);
     try {
-      const res = await fetch("http://localhost:5000/api/organization/add-role", {
+      const res = await fetch(`${API_URL}/api/organization/add-role`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ role: newRole })
@@ -79,7 +79,7 @@ export default function Roles() {
     if (!newDept.trim()) return;
     setSubmitting(true);
     try {
-      const res = await fetch("http://localhost:5000/api/organization/add-department", {
+      const res = await fetch(`${API_URL}/api/organization/add-department`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ department: newDept })
@@ -99,7 +99,7 @@ export default function Roles() {
     setSavingPermissions(true);
     setSuccessMsg("");
     try {
-      const res = await fetch("http://localhost:5000/api/organization/update-permissions", {
+      const res = await fetch(`${API_URL}/api/organization/update-permissions`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ roleBasedAccess: data.roleBasedAccess })
@@ -115,7 +115,7 @@ export default function Roles() {
   const handleDeleteRole = async (roleToDelete) => {
     if (!window.confirm(`Are you sure you want to delete ${roleToDelete}?`)) return;
     try {
-      const res = await fetch("http://localhost:5000/api/organization/delete-role", {
+      const res = await fetch(`${API_URL}/api/organization/delete-role`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ role: roleToDelete })
@@ -127,7 +127,7 @@ export default function Roles() {
   const handleDeleteDept = async (deptToDelete) => {
     if (!window.confirm(`Are you sure you want to delete ${deptToDelete}?`)) return;
     try {
-      const res = await fetch("http://localhost:5000/api/organization/delete-department", {
+      const res = await fetch(`${API_URL}/api/organization/delete-department`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ department: deptToDelete })

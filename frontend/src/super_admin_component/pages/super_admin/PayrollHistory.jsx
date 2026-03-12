@@ -10,7 +10,7 @@ const PayrollHistory = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/payroll/history');
+        const response = await axios.get('${API_URL}/api/payroll/history');
         setHistory(response.data);
         setLoading(false);
       } catch (error) {

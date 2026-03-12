@@ -19,7 +19,7 @@ export default function NotificationCenter() {
     fetchAll();
 
     // 2. Setup Real-time Listener
-    const socket = io("http://localhost:5000", { auth: { token } });
+    const socket = io(`${API_URL}`, { auth: { token } });
     
     socket.emit("join", id);
     

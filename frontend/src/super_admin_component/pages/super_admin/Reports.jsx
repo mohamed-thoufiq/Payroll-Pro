@@ -18,7 +18,7 @@ export default function Reports() {
         setLoading(true);
         const token = localStorage.getItem("token");
         // We call a simple endpoint to get the status of the payroll run
-        const res = await axios.get(`http://localhost:5000/api/payroll/payroll-status?month=${month}`, {
+        const res = await axios.get(`${API_URL}/api/payroll/payroll-status?month=${month}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         

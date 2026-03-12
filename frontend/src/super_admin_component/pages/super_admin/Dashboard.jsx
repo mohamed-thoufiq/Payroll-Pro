@@ -21,7 +21,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/superadmin/dashboardsummary", {
+        const res = await fetch(`${API_URL}/api/superadmin/dashboardsummary`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const result = await res.json();

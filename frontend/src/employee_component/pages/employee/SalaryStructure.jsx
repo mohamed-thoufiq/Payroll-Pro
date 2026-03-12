@@ -26,7 +26,7 @@ export default function SalaryStructure() {
   useEffect(() => {
     const fetchOrgSettings = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/organization/settings", {
+        const res = await fetch(`${API_URL}/api/organization/settings`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const result = await res.json();

@@ -15,7 +15,7 @@ export default function Payslips() {
         setLoading(true);
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "http://localhost:5000/api/payslips/my-payslips",
+          `${API_URL}/api/payslips/my-payslips`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setPayslips(res.data);
@@ -32,7 +32,7 @@ export default function Payslips() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        `http://localhost:5000/api/payslips/${id}`,
+        `${API_URL}/api/payslips/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSelectedPayslip(res.data);

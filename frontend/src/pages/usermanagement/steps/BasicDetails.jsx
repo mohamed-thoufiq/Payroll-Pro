@@ -23,7 +23,7 @@ const BasicDetails = ({ onNext }) => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/organization/settings", {
+        const res = await fetch(`${API_URL}/api/organization/settings`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
