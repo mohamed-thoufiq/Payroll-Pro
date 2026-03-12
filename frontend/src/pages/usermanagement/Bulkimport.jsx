@@ -6,7 +6,7 @@ import {
   FiInfo, FiUser, FiMail, FiHash, FiShield 
 } from 'react-icons/fi';
 import api from '../../utils/api'; 
-import { API_URL } from "../../../config/api";
+import { API_URL } from "../../config/api";
 export default function BulkImportPage() {
   const [approvedData, setApprovedData] = useState([]);
   const [failedData, setFailedData] = useState([]);
