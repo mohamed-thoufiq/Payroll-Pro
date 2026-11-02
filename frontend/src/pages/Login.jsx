@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import logo from "../assets/logo.svg";
 
 const QUICK_ROLES = [
-  { role: "Super Admin", email: "syedriz@gmail.com", color: "hover:bg-amber-100 hover:border-amber-400 text-amber-800 bg-amber-50/80 border-amber-300" },
+  { role: "Super Admin", email: "syed@gmail.com", color: "hover:bg-amber-100 hover:border-amber-400 text-amber-800 bg-amber-50/80 border-amber-300" },
   { role: "HR Admin", email: "hr@payroll.com", color: "hover:bg-amber-100 hover:border-amber-400 text-amber-800 bg-amber-50/80 border-amber-300" },
   { role: "Payroll Admin", email: "payroll@payroll.com", color: "hover:bg-red-100 hover:border-red-300 text-red-700 bg-red-50/80 border-red-200" },
   { role: "Finance", email: "finance@payroll.com", color: "hover:bg-emerald-100 hover:border-emerald-300 text-emerald-700 bg-emerald-50/80 border-emerald-200" },
@@ -27,7 +27,7 @@ const Login = () => {
 
   // 🚀 Pre-warm Render backend on initial visit
   useEffect(() => {
-    fetch(`${API_URL}/`).catch(() => {});
+    fetch(`${API_URL}/`).catch(() => { });
   }, []);
 
   // ⏳ Detect cold-start if request takes longer than 2.5s
