@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Eye, Download, Search, CheckCircle2, Clock, AlertCircle, X, TrendingUp, TrendingDown, Users } from 'lucide-react';
+import { API_URL } from '../../../config/api.js';
 
 const PayrollHistory = () => {
   const [history, setHistory] = useState([]);
@@ -10,7 +11,12 @@ const PayrollHistory = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/payroll/history');
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/api/payroll/history`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setHistory(response.data);
         setLoading(false);
       } catch (error) {
@@ -29,114 +35,126 @@ const PayrollHistory = () => {
     }).format(val || 0);
   };
 
-  if (loading) return <div className="p-10 text-center text-indigo-600 font-bold">Loading Payroll History...</div>;
+  if (loading) {
+    return (
+      <div className="p-8 text-center text-primary font-medium">
+        Loading Payroll History...
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen relative">
-      <h1 className="text-2xl font-black text-slate-800 mb-6 tracking-tight">Real-time Payroll History</h1>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h2 className="text-xl font-semibold text-text-primary">Payroll History</h2>
+        <p className="text-sm text-text-secondary mt-1">
+          View finalized and locked payroll cycles
+        </p>
+      </div>
 
       {/* --- DETAILS DIALOG --- */}
       {selectedRun && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden transform animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-xl w-full max-w-lg shadow-xl border border-gray-200 overflow-hidden transform animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+            <div className="px-6 py-4 bg-muted border-b border-gray-200 flex justify-between items-center">
               <div>
-                <h2 className="text-xl font-black text-slate-800 tracking-tight">Payroll Summary</h2>
-                <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">{selectedRun.month}</p>
+                <h3 className="text-base font-semibold text-text-primary">Payroll Summary</h3>
+                <p className="text-xs text-primary font-medium uppercase tracking-wider">{selectedRun.month}</p>
               </div>
               <button 
                 onClick={() => setSelectedRun(null)}
-                className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-400"
+                className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors text-text-secondary"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
             {/* Modal Content */}
-            <div className="p-8 space-y-6">
+            <div className="p-6 space-y-5">
               {/* Main Stats Grid */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
-                   <div className="flex items-center gap-2 text-indigo-600 mb-1">
-                      <Users size={14}/>
-                      <span className="text-[10px] font-black uppercase tracking-wider">Total Staff</span>
-                   </div>
-                   <p className="text-xl font-black text-slate-800">{selectedRun.totals.totalEmployees}</p>
+                <div className="p-4 bg-blue-50/60 rounded-lg border-l-4 border-l-primary border border-gray-100">
+                  <div className="flex items-center gap-2 text-primary mb-1">
+                    <Users size={14}/>
+                    <span className="text-xs font-semibold uppercase tracking-wider">Total Staff</span>
+                  </div>
+                  <p className="text-xl font-bold text-text-primary">{selectedRun.totals?.totalEmployees}</p>
                 </div>
-                <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                   <div className="flex items-center gap-2 text-emerald-600 mb-1">
-                      <TrendingUp size={14}/>
-                      <span className="text-[10px] font-black uppercase tracking-wider">Gross Amount</span>
-                   </div>
-                   <p className="text-xl font-black text-slate-800">{formatCurrency(selectedRun.totals.gross)}</p>
+                <div className="p-4 bg-emerald-50/60 rounded-lg border-l-4 border-l-success border border-gray-100">
+                  <div className="flex items-center gap-2 text-success mb-1">
+                    <TrendingUp size={14}/>
+                    <span className="text-xs font-semibold uppercase tracking-wider">Gross Amount</span>
+                  </div>
+                  <p className="text-xl font-bold text-text-primary">{formatCurrency(selectedRun.totals?.gross)}</p>
                 </div>
               </div>
 
               {/* Detail Breakdown */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Deductions</span>
-                  <span className="font-bold text-rose-500">-{formatCurrency(selectedRun.totals.deductions)}</span>
+              <div className="space-y-2.5">
+                <div className="flex justify-between items-center p-3.5 bg-muted rounded-lg text-sm">
+                  <span className="text-text-secondary font-medium">Deductions</span>
+                  <span className="font-semibold text-danger">-{formatCurrency(selectedRun.totals?.deductions)}</span>
                 </div>
-                <div className="flex justify-between items-center p-6 bg-slate-900 rounded-2xl text-white shadow-lg">
+                <div className="flex justify-between items-center p-4 bg-primary text-white rounded-lg shadow-sm">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 size={18} className="text-emerald-400" />
-                    <span className="text-xs font-black uppercase tracking-widest opacity-80">Final Net Pay</span>
+                    <CheckCircle2 size={18} className="text-yellow-400" />
+                    <span className="text-xs font-semibold uppercase tracking-wider opacity-90">Final Net Pay</span>
                   </div>
-                  <span className="text-2xl font-black">{formatCurrency(selectedRun.totals.netPay)}</span>
+                  <span className="text-xl font-bold">{formatCurrency(selectedRun.totals?.netPay)}</span>
                 </div>
               </div>
 
               {/* Metadata */}
-              <div className="pt-4 border-t border-slate-100 flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+              <div className="pt-3 border-t border-gray-200 flex justify-between text-xs text-text-muted">
                 <span>Created: {new Date(selectedRun.createdAt).toLocaleDateString()}</span>
-                <span>Status: {selectedRun.status}</span>
+                <span className="font-medium text-text-secondary uppercase">Status: {selectedRun.status}</span>
               </div>
             </div>
             
-            <div className="p-4 bg-slate-50 border-t border-slate-100">
-                <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
-                   <Download size={16}/> Download Full Report
-                </button>
+            <div className="px-6 py-3.5 bg-muted border-t border-gray-200">
+              <button className="w-full bg-primary hover:bg-primary-hover text-white py-2.5 rounded-lg font-medium text-sm shadow-sm transition-all flex items-center justify-center gap-2">
+                <Download size={16}/> Download Full Report
+              </button>
             </div>
           </div>
         </div>
       )}
 
       {/* --- TABLE VIEW --- */}
-      <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-muted text-text-secondary border-b border-gray-200 text-xs font-semibold uppercase tracking-wider">
             <tr>
-              <th className="px-6 py-4">Ref ID</th>
-              <th className="px-6 py-4">Payroll Period</th>
-              <th className="px-6 py-4">Net Payable</th>
-              <th className="px-6 py-4">Staff Count</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4 text-center">Action</th>
+              <th className="px-6 py-3.5">Ref ID</th>
+              <th className="px-6 py-3.5">Payroll Period</th>
+              <th className="px-6 py-3.5">Net Payable</th>
+              <th className="px-6 py-3.5 text-center">Staff Count</th>
+              <th className="px-6 py-3.5 text-center">Status</th>
+              <th className="px-6 py-3.5 text-center">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-gray-200">
             {history.length > 0 ? history.map((run) => (
-              <tr key={run._id} className="hover:bg-slate-50 transition-colors group">
-                <td className="px-6 py-4 font-mono text-[10px] text-slate-400 uppercase tracking-tighter">
+              <tr key={run._id} className="hover:bg-gray-50/80 transition-colors">
+                <td className="px-6 py-4 font-mono text-xs text-text-muted">
                   #{run._id.substring(18)}
                 </td>
-                <td className="px-6 py-4 font-bold text-slate-700">
+                <td className="px-6 py-4 font-medium text-text-primary">
                   {run.month}
                 </td>
-                <td className="px-6 py-4 font-black text-indigo-600">
+                <td className="px-6 py-4 font-semibold text-primary">
                   {formatCurrency(run.totals?.netPay)}
                 </td>
-                <td className="px-6 py-4 text-slate-600 font-medium">
+                <td className="px-6 py-4 text-center text-text-secondary">
                   {run.totals?.totalEmployees} Employees
                 </td>
-                <td className="px-6 py-4">
-                  <span className={`px-3 py-1 rounded-lg text-[10px] font-black border uppercase tracking-widest ${
-                    run.status === 'LOCKED' ? 'bg-rose-50 text-rose-600 border-rose-100' : 
-                    run.status === 'PAID' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
-                    'bg-slate-100 text-slate-500 border-slate-200'
+                <td className="px-6 py-4 text-center">
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium inline-block ${
+                    run.status === 'LOCKED' ? 'bg-gray-900 text-white' : 
+                    run.status === 'PAID' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 
+                    'bg-gray-100 text-text-secondary'
                   }`}>
                     {run.status}
                   </span>
@@ -144,15 +162,15 @@ const PayrollHistory = () => {
                 <td className="px-6 py-4 text-center">
                   <button 
                     onClick={() => setSelectedRun(run)}
-                    className="bg-slate-900 text-white p-2 rounded-lg hover:bg-black transition-all active:scale-90 flex items-center justify-center mx-auto"
+                    className="text-primary hover:text-primary-hover text-xs font-medium hover:underline inline-flex items-center gap-1.5"
                   >
-                    <Eye size={16} />
+                    <Eye size={14} /> View
                   </button>
                 </td>
               </tr>
             )) : (
               <tr>
-                <td colSpan="6" className="px-6 py-20 text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest italic">
+                <td colSpan="6" className="px-6 py-12 text-center text-text-muted text-sm">
                   No payroll history recorded.
                 </td>
               </tr>

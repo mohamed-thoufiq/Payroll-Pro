@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { X, Eye, Trash2, Search, Filter, ToggleLeft,ToggleRight} from "lucide-react";
+import { API_URL } from "../../config/api.js";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -50,13 +51,13 @@ const EmployeeList = () => {
       if (!token) throw new Error("User not logged in");
       const headers = { Authorization: `Bearer ${token}` };
 
-      const orgRes = await fetch("http://localhost:5000/api/organization/settings", { headers });
+      const orgRes = await fetch(`${API_URL}/api/organization/settings`, { headers });
       if (orgRes.ok) {
         const orgData = await orgRes.json();
         setOrgConfig(orgData);
       }
 
-      const empRes = await fetch("http://localhost:5000/api/users", { headers });
+      const empRes = await fetch(`${API_URL}/api/users`, { headers });
       if (empRes.ok) {
         const result = await empRes.json();
         setEmployees(Array.isArray(result.data) ? result.data : []);
@@ -153,7 +154,7 @@ const EmployeeList = () => {
     setEmployees(prev => prev.map(emp => emp._id === id ? { ...emp, status: newStatus } : emp));
     try {
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:5000/api/users/${id}/status`, {
+      await fetch(`${API_URL}/api/users/${id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: newStatus })
@@ -165,7 +166,7 @@ const EmployeeList = () => {
     if(!window.confirm("Delete employee?")) return;
     try {
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` }});
+      await fetch(`${API_URL}/api/users/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` }});
       setEmployees(prev => prev.filter(e => e._id !== id));
     } catch (e) { console.error(e); }
   };
@@ -192,21 +193,21 @@ const EmployeeList = () => {
   return (
     <div className="p-4 md:p-8 bg-slate-50 flex flex-col gap-6">
       
-      {/* Header Section */}
+      {/* Header Section matching C:\HTML\Payroll-frontend */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-slate-800 tracking-tight">Employee Directory</h2>
-          <p className="text-sm text-slate-500 font-medium">Manage workforce and statutory payroll components.</p>
+          <h2 className="text-xl font-semibold text-text-primary">Employee Directory</h2>
+          <p className="text-sm text-text-secondary mt-0.5">Manage workforce and statutory payroll components.</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative flex-1 md:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
             <input 
               type="text" 
               placeholder="Search ID or Name..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all shadow-sm"
+              className="w-full pl-9 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-sm"
             />
           </div>
         </div>
@@ -214,12 +215,12 @@ const EmployeeList = () => {
 
       {/* Tabs & Filters */}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex p-1 bg-slate-200/50 rounded-xl w-fit">
+        <div className="flex p-1 bg-muted rounded-lg w-fit border border-gray-200">
           {["All", "Active", "Inactive"].map(tab => (
             <button 
               key={tab} 
               onClick={() => setActiveTab(tab)} 
-              className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === tab ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+              className={`px-3.5 py-1 text-xs font-semibold rounded-md transition-all ${activeTab === tab ? "bg-white text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
             >
               {tab}
             </button>
@@ -228,36 +229,36 @@ const EmployeeList = () => {
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden lg:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="hidden lg:block bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <table className="w-full text-left">
           <thead>
-            <tr className="bg-slate-50/50 border-b border-slate-200 text-[10px] uppercase tracking-widest font-black text-slate-500">
-              <th className="px-6 py-4">Employee Details</th>
-              <th className="px-6 py-4">Role & Dept</th>
-              <th className="px-6 py-4 text-right">Gross Salary</th>
-              <th className="px-6 py-4 text-right">Estimated Net</th>
-              <th className="px-6 py-4 text-center">Status</th>
-              <th className="px-6 py-4 text-right">Actions</th>
+            <tr className="bg-muted border-b border-gray-200 text-xs uppercase tracking-wider font-semibold text-text-secondary">
+              <th className="px-6 py-3.5">Employee Details</th>
+              <th className="px-6 py-3.5">Role & Dept</th>
+              <th className="px-6 py-3.5 text-right">Gross Salary</th>
+              <th className="px-6 py-3.5 text-right">Estimated Net</th>
+              <th className="px-6 py-3.5 text-center">Status</th>
+              <th className="px-6 py-3.5 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-sm">
+          <tbody className="divide-y divide-gray-100 text-sm">
             {paginatedEmployees.map((emp) => {
               const { monthlyGross, netPay } = calculateSalaryDetails(emp);
               return (
-                <tr key={emp._id} className="hover:bg-slate-50/50 transition-colors group">
+                <tr key={emp._id} className="hover:bg-gray-50/80 transition-colors group">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-sm">
+                      <div className="h-9 w-9 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-primary font-bold text-sm shadow-sm">
                         {emp.name?.[0]}
                       </div>
                       <div>
-                        <div className="font-bold text-slate-800">{emp.name}</div>
-                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{emp.employeeDetails?.basic?.employeeId}</div>
+                        <div className="font-semibold text-text-primary">{emp.name}</div>
+                        <div className="text-xs text-text-muted">{emp.employeeDetails?.basic?.employeeId}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-slate-600">
-                    <div className="font-semibold">{emp.role}</div>
+                  <td className="px-6 py-4 text-text-secondary">
+                    <div className="font-medium text-text-primary">{emp.role}</div>
                     <div className="text-xs text-slate-400">{emp.employeeDetails?.basic?.department}</div>
                   </td>
                   <td className="px-6 py-4 text-right font-bold text-slate-700">{formatCurrency(monthlyGross)}</td>

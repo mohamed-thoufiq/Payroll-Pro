@@ -31,7 +31,7 @@ import { API_URL } from '../config/api';
     
       const register = async (name, email, password, companyName) => {
         try {
-          const res = await fetch('http://localhost:5000/api/auth/register-super-admin', {
+          const res = await fetch(`${API_URL}/api/auth/register-super-admin`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password, companyName })
@@ -62,21 +62,32 @@ import { API_URL } from '../config/api';
         if (!res.ok) throw new Error(data.message);
 
         // ✅ Save to localStorage FIRST
+        const userObj = {
+          ...data.user,
+          portal: data.user.role === "Employee" ? "employee" : "admin"
+        };
+
         localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('user', JSON.stringify(userObj));
         
         // ✅ Update state
         setToken(data.token);
-        setUser(data.user);
+        setUser(userObj);
 
         // ✅ Small delay to ensure state updates
         await new Promise(resolve => setTimeout(resolve, 100));
+
+        // ✅ If user is an employee, navigate directly to employee portal
+        if (data.user.role === "Employee") {
+          navigate("/employee");
+          return;
+        }
 
         // ✅ Navigate based on onboarding status
         if (data.requiresOnboarding) {
           navigate('/onboarding');
         } else {
-        navigate(`/payroll/${roleToPath(data.user.role)}`);
+          navigate(`/payroll/${roleToPath(data.user.role)}`);
         }
       } catch (err) {
         throw err;
@@ -124,7 +135,7 @@ import { API_URL } from '../config/api';
         localStorage.removeItem('user');
         setToken(null);
         setUser(null);
-        navigate('/employeeLogin');
+        navigate('/employeelogin');
       };
       return (
         <AuthContext.Provider value={{ user, token, loading, register, login,employeeLogin, logout,Employeelogout }}>

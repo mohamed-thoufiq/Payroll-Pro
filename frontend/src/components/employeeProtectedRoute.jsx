@@ -19,7 +19,7 @@ const EmployeeProtectedRoute = ({ children }) => {
   if (!user) {
     return (
       <Navigate
-        to="/employeeLogin"
+        to="/employeelogin"
         replace
         state={{ from: location }}
       />
@@ -27,7 +27,7 @@ const EmployeeProtectedRoute = ({ children }) => {
   }
 
   /* 3️⃣ Not an employee */
-  if ( user.portal !== "employee") {
+  if (user.portal !== "employee" && user.role !== "Employee") {
     return <Navigate to="/unauthorized" replace />;
   }
 

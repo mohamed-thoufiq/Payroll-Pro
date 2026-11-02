@@ -39,26 +39,22 @@ const AddEmployee = () => {
 
   return (
     <EmployeeFormProvider>
-      <div className="max-w-5xl mx-auto px-0 md:px-4 lg:px-8">
-        
+      <div className="max-w-5xl mx-auto space-y-4">
         {/* --- MAIN CONTAINER --- */}
-        <div className="bg-white md:rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-200 overflow-hidden min-h-[calc(100vh-120px)] flex flex-col">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
           
           {/* --- TOP HEADER --- */}
-          <div className="p-4 md:p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-10">
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-muted sticky top-0 z-10">
             <div className="flex items-center gap-3">
-              {/* Back Icon Button */}
-        
-              
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <MdPersonAddAlt1 className="text-indigo-600 hidden sm:block" size={20} />
-                  <h1 className="text-lg md:text-xl font-black text-slate-800 tracking-tight truncate">
-                    Onboard Employee
-                  </h1>
-                </div>
-                <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">
-                  Step {step + 1} of {steps.length} • {step === 3 ? 'Finalizing' : 'Information'}
+              <div className="p-2 bg-blue-50 text-primary rounded-lg border border-blue-100">
+                <MdPersonAddAlt1 size={20} />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold text-text-primary">
+                  Employee Onboarding Wizard
+                </h2>
+                <p className="text-xs text-text-muted">
+                  Step {step + 1} of {steps.length} • {step === 3 ? 'Finalizing' : 'Profile Information'}
                 </p>
               </div>
             </div>
@@ -66,20 +62,20 @@ const AddEmployee = () => {
             {/* Cancel Button */}
             <button
               onClick={handleCancel}
-              className="px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-black text-rose-600 hover:bg-rose-50 rounded-xl transition-colors flex items-center gap-1"
+              className="px-3 py-1.5 text-xs font-semibold text-danger hover:bg-rose-50 rounded-lg transition-colors flex items-center gap-1 border border-rose-200"
             >
-              <MdClose size={18} />
-              <span className="hidden sm:inline">Cancel</span>
+              <MdClose size={16} />
+              <span>Cancel</span>
             </button>
           </div>
 
           {/* --- STEPPER PROGRESS --- */}
-          <div className="bg-slate-50/50 py-4 md:py-8 border-b border-slate-100 px-4 md:px-10">
+          <div className="bg-white py-5 border-b border-gray-200 px-6 md:px-10">
             <Stepper currentStep={step} onBack={handleBack} />
           </div>
 
           {/* --- FORM CONTENT --- */}
-          <div className="flex-1 p-4 md:p-8 lg:p-12 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
+          <div className="flex-1 p-6 md:p-8 transition-all duration-300">
              <div className="max-w-3xl mx-auto h-full">
                 {steps[step]}
              </div>
@@ -87,10 +83,10 @@ const AddEmployee = () => {
 
         </div>
 
-        {/* --- FOOTER INFO (Optional) --- */}
-        <div className="mt-4 text-center">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Data is encrypted and saved locally as you progress
+        {/* --- FOOTER INFO --- */}
+        <div className="text-center">
+          <p className="text-xs text-text-muted">
+            Data is validated and saved as you progress through each step
           </p>
         </div>
       </div>

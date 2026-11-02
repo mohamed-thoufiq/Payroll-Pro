@@ -93,49 +93,45 @@ export default function EmployeeReimbursementForm() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6">
       <Toaster position="top-right" reverseOrder={false} />
 
       {/* 1. HEADER SECTION */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-slate-200">
-      
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-            <MdReceiptLong className="text-indigo-600" /> New Reimbursement
-          </h1>
-          <p className="text-sm font-medium text-slate-500 mt-1 uppercase tracking-widest text-[10px]">
-            Claim financial settlements for business expenses
+          <h2 className="text-xl font-semibold text-text-primary flex items-center gap-2">
+            <MdReceiptLong className="text-primary text-2xl" /> New Reimbursement Claim
+          </h2>
+          <p className="text-sm text-text-secondary mt-0.5">
+            Submit business and travel expenses for management approval and payroll settlement
           </p>
         </div>
          
-          <button onClick={handleNavClick}
-          className="flex items-center gap-2 bg-slate-900 text-white px-8 py-3 rounded-2xl font-black text-xs shadow-xl active:scale-95 transition-all hover:bg-slate-800"
-          >
-          <MdHistory size={20}/>  HISTORY
-          </button>
-      
+        <button 
+          onClick={handleNavClick}
+          className="flex items-center gap-1.5 bg-muted hover:bg-gray-200 text-text-primary border border-gray-200 px-4 py-2 rounded-lg text-xs font-semibold shadow-sm transition-colors"
+        >
+          <MdHistory size={16}/> Claim History
+        </button>
       </div>
-      
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* 2. LEFT: FORM SECTION (The Glass Slab) */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden relative group">
-            <div className="absolute right-0 top-1/4 bottom-1/4 w-1.5 rounded-l-full bg-indigo-600" />
-            
-            <div className="p-6 bg-slate-50/50 border-b border-slate-100 flex justify-between items-center px-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
-               <span>Expense Details</span>
-               <MdOutlineCategory size={20} />
+        {/* 2. LEFT: FORM SECTION */}
+        <div className="lg:col-span-2 space-y-5">
+          <div className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-primary shadow-sm overflow-hidden">
+            <div className="px-6 py-4 bg-muted border-b border-gray-200 flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-text-secondary">
+              <span>Expense Details</span>
+              <MdOutlineCategory size={18} className="text-primary" />
             </div>
 
-            <div className="p-8 space-y-6">
+            <div className="p-6 space-y-5">
               {/* Row 1: Category & Amount */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormGroup label="Category" icon={<MdOutlineCategory />}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <FormGroup label="Expense Category" icon={<MdOutlineCategory />}>
                   <select
                     name="category"
-                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl font-bold text-slate-800 outline-none focus:border-indigo-600 focus:bg-white transition-all shadow-inner"
+                    className="w-full bg-white border border-gray-200 px-3.5 py-2.5 rounded-lg font-medium text-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                     value={form.category}
                     onChange={handleChange}
                   >
@@ -148,12 +144,12 @@ export default function EmployeeReimbursementForm() {
                   </select>
                 </FormGroup>
 
-                <FormGroup label="Claim Amount" icon={<MdCurrencyRupee />}>
+                <FormGroup label="Claim Amount (INR)" icon={<MdCurrencyRupee />}>
                   <input
                     name="amount"
                     type="number"
                     placeholder="0.00"
-                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl font-bold text-slate-800 outline-none focus:border-indigo-600 focus:bg-white transition-all shadow-inner"
+                    className="w-full bg-white border border-gray-200 px-3.5 py-2.5 rounded-lg font-medium text-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                     onChange={handleChange}
                     value={form.amount}
                   />
@@ -161,12 +157,12 @@ export default function EmployeeReimbursementForm() {
               </div>
 
               {/* Row 2: Date */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormGroup label="Expense Date" icon={<MdCalendarToday />}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <FormGroup label="Expense Incurred Date" icon={<MdCalendarToday />}>
                   <input
                     name="expenseDate"
                     type="date"
-                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl font-bold text-slate-800 outline-none focus:border-indigo-600 focus:bg-white transition-all shadow-inner"
+                    className="w-full bg-white border border-gray-200 px-3.5 py-2.5 rounded-lg font-medium text-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                     onChange={handleChange}
                     value={form.expenseDate}
                   />
@@ -174,12 +170,12 @@ export default function EmployeeReimbursementForm() {
               </div>
 
               {/* Row 3: Description */}
-              <FormGroup label="Justification / Description" icon={<MdDescription />}>
+              <FormGroup label="Business Justification" icon={<MdDescription />}>
                 <textarea
                   name="description"
-                  rows="4"
-                  placeholder="Describe the reason for this expense..."
-                  className="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl font-bold text-slate-800 outline-none focus:border-indigo-600 focus:bg-white transition-all shadow-inner"
+                  rows="3"
+                  placeholder="Provide details about the business purpose of this expense..."
+                  className="w-full bg-white border border-gray-200 px-3.5 py-2.5 rounded-lg font-medium text-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm resize-none"
                   onChange={handleChange}
                   value={form.description}
                 />
@@ -189,41 +185,38 @@ export default function EmployeeReimbursementForm() {
               <button
                 onClick={submitRequest}
                 disabled={loading}
-                className={`w-full py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl transition-all active:scale-95 ${
+                className={`w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 shadow-sm transition-all ${
                   loading 
-                    ? "bg-slate-200 text-slate-400 cursor-not-allowed" 
-                    : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200"
+                    ? "bg-gray-200 text-text-muted cursor-not-allowed" 
+                    : "bg-primary hover:bg-primary-hover text-white active:scale-[0.99]"
                 }`}
               >
-                {loading ? "Syncing Claim..." : "Submit for Approval"}
-                {!loading && <MdSend size={18} />}
+                {loading ? "Submitting Claim..." : "Submit Claim for Approval"}
+                {!loading && <MdSend size={16} />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* 3. RIGHT: INFO & METRICS */}
-        <div className="space-y-6">
-          <div className="relative overflow-hidden rounded-[2.5rem] p-0.5 bg-gradient-to-br from-indigo-500 to-purple-600 shadow-2xl shadow-indigo-100">
-            <div className="bg-white/95 backdrop-blur-md rounded-[2.3rem] p-8 h-full">
-              <div className="flex items-center gap-2 mb-6">
-                 <MdInfoOutline className="text-indigo-600" size={22} />
-                 <h3 className="font-black text-slate-800 text-xs uppercase tracking-widest">Policy Guide</h3>
-              </div>
-              <ul className="space-y-4">
-                <PolicyItem text="Ensure receipts are clear and legible." />
-                <PolicyItem text="Claims must be submitted within 30 days." />
-                <PolicyItem text="Hotel claims require GST invoices." />
-              </ul>
+        {/* 3. RIGHT: INFO & POLICIES */}
+        <div className="space-y-5">
+          <div className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-warning p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
+              <MdInfoOutline className="text-warning text-lg" />
+              <h3 className="font-semibold text-text-primary text-sm uppercase tracking-wider">Policy Checklist</h3>
             </div>
+            <ul className="space-y-3">
+              <PolicyItem text="Ensure receipts and bills are clear and legible." />
+              <PolicyItem text="Claims must be submitted within 30 days of the expense." />
+              <PolicyItem text="Hotel and travel claims require valid GST invoices." />
+              <PolicyItem text="Meal expenses have a daily allowance limit per policy." />
+            </ul>
           </div>
 
-          <div className="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group">
-             <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-700">
-                <MdReceiptLong size={120} />
-             </div>
-             <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Settlement Cycle</p>
-             <p className="text-2xl font-black tracking-tight leading-tight">Payouts process every 15th of the month.</p>
+          <div className="bg-gray-900 p-6 rounded-xl text-white shadow-sm relative overflow-hidden">
+            <p className="text-xs font-semibold text-yellow-400 uppercase tracking-wider mb-1">Settlement Cycle</p>
+            <p className="text-lg font-bold tracking-tight">Approved payouts process on the 15th of every month.</p>
+            <p className="text-xs text-gray-400 mt-2">Disbursements are added to your monthly bank transfer batch.</p>
           </div>
         </div>
 
@@ -235,9 +228,9 @@ export default function EmployeeReimbursementForm() {
 // Internal Helper Component for Policy Items
 function PolicyItem({ text }) {
   return (
-    <li className="flex items-start gap-3">
-      <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5" />
-      <p className="text-xs font-bold text-slate-500 leading-relaxed">{text}</p>
+    <li className="flex items-start gap-2.5">
+      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+      <p className="text-xs text-text-secondary leading-relaxed">{text}</p>
     </li>
   );
 }
@@ -245,8 +238,8 @@ function PolicyItem({ text }) {
 // Internal Helper Component for Form Groups
 function FormGroup({ label, icon, children }) {
   return (
-    <div className="space-y-2">
-      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex items-center gap-2">
+    <div className="space-y-1.5">
+      <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
         {icon} {label}
       </label>
       {children}

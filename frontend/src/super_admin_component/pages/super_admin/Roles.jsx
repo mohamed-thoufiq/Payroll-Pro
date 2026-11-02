@@ -4,6 +4,7 @@ import {
   MdBusinessCenter, MdAccountTree, MdAdd, MdClose, 
   MdShield, MdSave, MdEdit, MdCheckCircle, MdErrorOutline 
 } from "react-icons/md";
+import { API_URL } from "../../../config/api.js";
 
 // Permission Constants (Logic preserved)
 const PERMISSIONS = {
@@ -32,7 +33,7 @@ export default function Roles() {
   // --- 1. Fetch Data (Logic preserved) ---
   const fetchSettings = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/organization/settings", {
+      const res = await fetch(`${API_URL}/api/organization/settings`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -64,7 +65,7 @@ export default function Roles() {
     }
     setSubmitting(true);
     try {
-      const res = await fetch("http://localhost:5000/api/organization/add-role", {
+      const res = await fetch(`${API_URL}/api/organization/add-role`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ role: newRole })
@@ -79,7 +80,7 @@ export default function Roles() {
     if (!newDept.trim()) return;
     setSubmitting(true);
     try {
-      const res = await fetch("http://localhost:5000/api/organization/add-department", {
+      const res = await fetch(`${API_URL}/api/organization/add-department`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ department: newDept })
@@ -99,7 +100,7 @@ export default function Roles() {
     setSavingPermissions(true);
     setSuccessMsg("");
     try {
-      const res = await fetch("http://localhost:5000/api/organization/update-permissions", {
+      const res = await fetch(`${API_URL}/api/organization/update-permissions`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ roleBasedAccess: data.roleBasedAccess })
@@ -115,7 +116,7 @@ export default function Roles() {
   const handleDeleteRole = async (roleToDelete) => {
     if (!window.confirm(`Are you sure you want to delete ${roleToDelete}?`)) return;
     try {
-      const res = await fetch("http://localhost:5000/api/organization/delete-role", {
+      const res = await fetch(`${API_URL}/api/organization/delete-role`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ role: roleToDelete })
@@ -127,7 +128,7 @@ export default function Roles() {
   const handleDeleteDept = async (deptToDelete) => {
     if (!window.confirm(`Are you sure you want to delete ${deptToDelete}?`)) return;
     try {
-      const res = await fetch("http://localhost:5000/api/organization/delete-department", {
+      const res = await fetch(`${API_URL}/api/organization/delete-department`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ department: deptToDelete })
@@ -136,27 +137,32 @@ export default function Roles() {
     } catch (error) { console.error("Error deleting department:", error); }
   };
 
-  const inputClass = "flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all";
+  const inputClass = "flex-1 px-3.5 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all";
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center p-20 space-y-4">
-      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-      <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Initialising Matrix...</p>
+    <div className="flex flex-col items-center justify-center p-16 space-y-3">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <p className="text-xs font-medium text-text-muted">Loading Organization Matrix...</p>
     </div>
   );
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-8 animate-in fade-in duration-500">
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h2 className="text-xl font-semibold text-text-primary">Roles & Organization Setup</h2>
+        <p className="text-sm text-text-secondary mt-0.5">Manage job designations, organizational units, and permission matrices</p>
+      </div>
       
       {/* Alert Messages */}
       {error && (
-        <div className="bg-rose-50 text-rose-600 p-4 rounded-2xl flex items-center gap-3 text-xs font-black border border-rose-100 uppercase tracking-wider">
-          <MdErrorOutline size={20} /> {error}
+        <div className="bg-rose-50 text-rose-700 p-3.5 rounded-xl flex items-center gap-3 text-xs font-semibold border border-rose-200">
+          <MdErrorOutline size={18} /> {error}
         </div>
       )}
       {successMsg && (
-        <div className="bg-emerald-50 text-emerald-600 p-4 rounded-2xl flex items-center gap-3 text-xs font-black border border-emerald-100 uppercase tracking-wider">
-          <MdCheckCircle size={20} /> {successMsg}
+        <div className="bg-emerald-50 text-emerald-700 p-3.5 rounded-xl flex items-center gap-3 text-xs font-semibold border border-emerald-200">
+          <MdCheckCircle size={18} /> {successMsg}
         </div>
       )}
 
@@ -164,158 +170,164 @@ export default function Roles() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Roles Management */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
-          <div className="absolute right-0 top-0 h-full w-1.5 bg-indigo-600" />
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl"><MdBusinessCenter size={24} /></div>
-            <div>
-              <h2 className="text-lg font-black text-slate-800 tracking-tight">System Roles</h2>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Manage User Designations</p>
+        <div className="bg-white p-5 rounded-xl border border-gray-200 border-l-4 border-l-primary shadow-sm flex flex-col justify-between space-y-4">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 bg-blue-50 text-primary rounded-lg border border-blue-100">
+                <MdBusinessCenter size={20} />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-text-primary">System Roles</h3>
+                <p className="text-xs text-text-muted">Manage employee job designations</p>
+              </div>
+            </div>
+
+            <div className="mb-4 flex flex-wrap gap-2 min-h-[48px]">
+              {data.roles.map((role, idx) => (
+                <div key={idx} className="pl-3 pr-2 py-1 bg-muted text-text-primary text-xs font-medium rounded-lg border border-gray-200 flex items-center gap-2 hover:bg-gray-100 transition-colors">
+                  <span>{role}</span>
+                  <button onClick={()=>handleDeleteRole(role)} className="text-text-muted hover:text-danger transition-colors">
+                    <MdClose size={14} />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="flex-1 mb-8 flex flex-wrap gap-2">
-            {data.roles.map((role, idx) => (
-              <div key={idx} className="pl-3 pr-2 py-1.5 bg-slate-50 text-slate-700 text-xs font-bold rounded-lg border border-slate-200 flex items-center gap-2 group hover:bg-white transition-all">
-                <span>{role}</span>
-                <button onClick={()=>handleDeleteRole(role)} className="text-slate-300 hover:text-rose-500 transition-colors"><MdClose size={14} /></button>
-              </div>
-            ))}
-          </div>
-
-          <form onSubmit={handleAddRole} className="flex gap-2 mt-auto">
+          <form onSubmit={handleAddRole} className="flex gap-2 pt-2 border-t border-gray-100">
             <input 
               type="text" placeholder="e.g. Senior Lead" value={newRole}
               onChange={(e) => { setNewRole(e.target.value); setError(""); }}
               className={inputClass}
             />
-            <button disabled={submitting || !newRole} className="bg-indigo-600 text-white p-3 rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all active:scale-95 disabled:opacity-50">
-              <MdAdd size={24} />
+            <button disabled={submitting || !newRole} className="bg-primary hover:bg-primary-hover text-white px-3.5 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-1 shadow-sm">
+              <MdAdd size={20} /> Add
             </button>
           </form>
         </div>
 
         {/* Departments Management */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
-          <div className="absolute right-0 top-0 h-full w-1.5 bg-emerald-500" />
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl"><MdAccountTree size={24} /></div>
-            <div>
-              <h2 className="text-lg font-black text-slate-800 tracking-tight">Departments</h2>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Organizational Units</p>
+        <div className="bg-white p-5 rounded-xl border border-gray-200 border-l-4 border-l-success shadow-sm flex flex-col justify-between space-y-4">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 bg-emerald-50 text-success rounded-lg border border-emerald-100">
+                <MdAccountTree size={20} />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-text-primary">Departments</h3>
+                <p className="text-xs text-text-muted">Organizational and cost center units</p>
+              </div>
+            </div>
+
+            <div className="mb-4 flex flex-wrap gap-2 min-h-[48px]">
+              {data.departments.map((dept, idx) => (
+                <div key={idx} className="pl-3 pr-2 py-1 bg-muted text-text-primary text-xs font-medium rounded-lg border border-gray-200 flex items-center gap-2 hover:bg-gray-100 transition-colors">
+                  <span>{dept}</span>
+                  <button onClick={()=>handleDeleteDept(dept)} className="text-text-muted hover:text-danger transition-colors">
+                    <MdClose size={14} />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="flex-1 mb-8 flex flex-wrap gap-2">
-            {data.departments.map((dept, idx) => (
-              <div key={idx} className="pl-3 pr-2 py-1.5 bg-slate-50 text-slate-700 text-xs font-bold rounded-lg border border-slate-200 flex items-center gap-2 hover:bg-white transition-all">
-                <span>{dept}</span>
-                <button onClick={()=>handleDeleteDept(dept)} className="text-slate-300 hover:text-rose-500 transition-colors"><MdClose size={14} /></button>
-              </div>
-            ))}
-          </div>
-
-          <form onSubmit={handleAddDept} className="flex gap-2 mt-auto">
+          <form onSubmit={handleAddDept} className="flex gap-2 pt-2 border-t border-gray-100">
             <input 
               type="text" placeholder="e.g. Finance" value={newDept}
               onChange={(e) => { setNewDept(e.target.value); setError(""); }}
               className={inputClass}
             />
-            <button disabled={submitting || !newDept} className="bg-emerald-600 text-white p-3 rounded-xl hover:bg-emerald-700 shadow-lg shadow-emerald-100 transition-all active:scale-95 disabled:opacity-50">
-              <MdAdd size={24} />
+            <button disabled={submitting || !newDept} className="bg-primary hover:bg-primary-hover text-white px-3.5 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-1 shadow-sm">
+              <MdAdd size={20} /> Add
             </button>
           </form>
         </div>
       </div>
 
-      {/* --- BOTTOM SECTION: RBAC (The Glass-Slab UI) --- */}
-      <div className="relative overflow-hidden rounded-3xl p-0.5 bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl shadow-indigo-100/50">
-        <div className="bg-white/95 backdrop-blur-md rounded-[22px] overflow-hidden">
-          
-          <div className="p-6 md:p-8 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-slate-50/50">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-white text-orange-600 rounded-xl shadow-sm border border-slate-100"><MdShield size={28} /></div>
-              <div>
-                <h2 className="text-xl font-black text-slate-800 tracking-tight">Role Access Control</h2>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Permission Mapping Matrix</p>
-              </div>
+      {/* --- BOTTOM SECTION: RBAC Matrix --- */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 bg-muted flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-50 text-primary rounded-lg border border-blue-100">
+              <MdShield size={20} />
             </div>
+            <div>
+              <h3 className="text-base font-semibold text-text-primary">Role Access Control</h3>
+              <p className="text-xs text-text-secondary">Permission mapping and module accessibility matrix</p>
+            </div>
+          </div>
 
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              {!isEditing ? (
-                <button 
-                  onClick={() => setIsEditing(true)}
-                  className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl text-xs font-black text-slate-700 hover:bg-slate-50 transition-all shadow-sm active:scale-95"
-                >
-                  <MdEdit size={18} /> Unlock Matrix
+          <div className="flex items-center gap-2 self-stretch sm:self-auto">
+            {!isEditing ? (
+              <button 
+                onClick={() => setIsEditing(true)}
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-gray-50 transition-colors shadow-sm"
+              >
+                <MdEdit size={16} /> Unlock & Edit Matrix
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button onClick={() => setIsEditing(false)} className="px-3 py-2 text-xs font-medium text-text-muted hover:text-danger transition-colors">
+                  Discard
                 </button>
-              ) : (
-                <div className="flex gap-2 w-full md:w-auto">
-                  <button onClick={() => setIsEditing(false)} className="px-4 py-3 text-xs font-black text-slate-400 hover:text-rose-500 transition-colors uppercase tracking-widest">Discard</button>
-                  <button 
-                    onClick={savePermissions}
-                    disabled={savingPermissions}
-                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-8 py-3 bg-indigo-600 text-white rounded-xl text-xs font-black shadow-lg shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50"
-                  >
-                    {savingPermissions ? "Syncing..." : <><MdSave size={18} /> Save Matrix</>}
-                  </button>
-                </div>
-              )}
-            </div>
+                <button 
+                  onClick={savePermissions}
+                  disabled={savingPermissions}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-50"
+                >
+                  {savingPermissions ? "Saving..." : <><MdSave size={16} /> Save Matrix</>}
+                </button>
+              </div>
+            )}
           </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] bg-slate-50/30">
-                  <th className="px-8 py-5">Designation</th>
-                  <th className="px-8 py-5">Assigned Access Level</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {data.roles.map((role) => (
-                  <tr key={role} className="group transition-colors hover:bg-slate-50/50">
-                    <td className="px-8 py-6">
-                      <span className="font-black text-slate-700 text-sm italic tracking-tight">{role}</span>
-                    </td>
-                    <td className="px-8 py-6">
-                      <div className="max-w-md relative">
-                        <select
-                          disabled={!isEditing}
-                          value={data.roleBasedAccess[role] || ""}
-                          onChange={(e) => handlePermissionChange(role, e.target.value)}
-                          className={`w-full px-4 py-3 rounded-xl text-xs font-bold transition-all border outline-none appearance-none
-                            ${!isEditing 
-                              ? "bg-slate-100 border-transparent text-slate-400 cursor-not-allowed" 
-                              : "bg-white border-slate-200 text-indigo-700 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 shadow-sm"
-                            }`}
-                        >
-                          <option value="" disabled>Awaiting Assignment...</option>
-                          <option value="ALL_EXCEPT_ORG">{PERMISSIONS.ALL_EXCEPT_ORG}</option>
-                          <option value="PAYROLL_ONLY">{PERMISSIONS.PAYROLL_ONLY}</option>
-                          <option value="USER_MGMT">{PERMISSIONS.USER_MGMT}</option>
-                          <option value="VIEW_EXPORT">{PERMISSIONS.VIEW_EXPORT}</option>
-                        </select>
-                        {isEditing && (
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-indigo-400">
-                             <MdEdit size={14} />
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          
-          {data.roles.length === 0 && (
-            <div className="py-20 flex flex-col items-center justify-center gap-4 text-center">
-              <MdShield size={64} className="text-slate-100" />
-              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No roles detected for permission mapping</p>
-            </div>
-          )}
         </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-muted text-text-secondary border-b border-gray-200 text-xs font-semibold uppercase tracking-wider">
+              <tr>
+                <th className="px-6 py-3.5">Designation</th>
+                <th className="px-6 py-3.5">Assigned Access Level</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {data.roles.map((role) => (
+                <tr key={role} className="hover:bg-gray-50/80 transition-colors">
+                  <td className="px-6 py-4">
+                    <span className="font-semibold text-text-primary text-sm">{role}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="max-w-md">
+                      <select
+                        disabled={!isEditing}
+                        value={data.roleBasedAccess[role] || ""}
+                        onChange={(e) => handlePermissionChange(role, e.target.value)}
+                        className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-all border outline-none
+                          ${!isEditing 
+                            ? "bg-gray-50 border-gray-200 text-text-muted cursor-not-allowed" 
+                            : "bg-white border-primary text-text-primary focus:ring-1 focus:ring-primary shadow-sm"
+                          }`}
+                      >
+                        <option value="" disabled>Awaiting Assignment...</option>
+                        <option value="ALL_EXCEPT_ORG">{PERMISSIONS.ALL_EXCEPT_ORG}</option>
+                        <option value="PAYROLL_ONLY">{PERMISSIONS.PAYROLL_ONLY}</option>
+                        <option value="USER_MGMT">{PERMISSIONS.USER_MGMT}</option>
+                        <option value="VIEW_EXPORT">{PERMISSIONS.VIEW_EXPORT}</option>
+                      </select>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        {data.roles.length === 0 && (
+          <div className="py-12 flex flex-col items-center justify-center gap-2 text-center text-text-muted">
+            <MdShield size={36} className="text-gray-300" />
+            <p className="text-xs font-medium">No roles registered for permission mapping</p>
+          </div>
+        )}
       </div>
     </div>
   );

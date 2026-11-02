@@ -14,7 +14,8 @@ export const employeeLogin = async (req, res) => {
       passwordProvided: !!req.body?.password
     });
 
-    const { email, password } = req.body;
+    const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    const password = typeof req.body?.password === 'string' ? req.body.password : '';
 
     if (!email || !password) {
       console.warn("⚠️ Missing email or password");
@@ -96,14 +97,14 @@ export const employeeLogin = async (req, res) => {
 
     console.log("🎟️ JWT token generated");
 
-    /* =====================================================
-       6️⃣ RESPONSE
-    ===================================================== */
-   res.status(200).json({
-  message: "Employee login successful",
-  token,
-  user
-});
+    const userSafe = user.toObject ? user.toObject() : { ...user };
+    delete userSafe.password;
+
+    res.status(200).json({
+      message: "Employee login successful",
+      token,
+      user: userSafe
+    });
 
 
     console.log("✅ Employee login success response sent");

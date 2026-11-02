@@ -11,7 +11,7 @@ import {
   LogOut, 
   X, 
   WalletCards 
-} from 'lucide-react'; // Modern, attractive icon set
+} from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
 
 const menu = [
@@ -54,34 +54,40 @@ export default function EmpSidebar({ isOpen, onClose }) {
         )}
       </AnimatePresence>
       
-      {/* SIDEBAR ASIDE */}
+      {/* SIDEBAR ASIDE - Royal Blue & Gold Theme from C:\HTML\Payroll-frontend */}
       <aside className={`
-        fixed left-0 top-0 h-screen w-64 bg-white border-r border-slate-200 flex flex-col z-50 transition-transform duration-300 ease-in-out
+        fixed left-0 top-0 h-screen w-64 bg-primary text-white flex flex-col z-50 transition-transform duration-300 ease-in-out shadow-lg
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
         
         {/* MOBILE CLOSE BUTTON */}
-        <button onClick={onClose} className="lg:hidden absolute right-4 top-4 p-2 text-slate-400 hover:text-slate-600 transition-colors">
+        <button onClick={onClose} className="lg:hidden absolute right-4 top-4 p-2 text-blue-200 hover:text-white transition-colors">
           <X size={20} />
         </button>
 
         {/* PROFILE HEADER */}
-        <div className="p-8 border-b border-slate-50 flex flex-col items-center text-center">
-          <div className="w-20 h-20 rounded-3xl bg-indigo-600 flex items-center justify-center text-white text-2xl font-black shadow-xl shadow-indigo-100 mb-4 transition-transform hover:scale-105">
-            {getInitials(user?.name)}
+        <div className="px-6 py-6 border-b border-yellow-400/30">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full border-2 border-yellow-400 bg-white/10 flex items-center justify-center text-yellow-300 font-bold text-base shadow-sm">
+              {getInitials(user?.name)}
+            </div>
+            <div className="min-w-0">
+              <p className="font-semibold text-white truncate text-sm">
+                {user?.name ?? 'Employee'}
+              </p>
+              <p className="text-xs text-yellow-300 font-medium">
+                {user?.role ?? 'User'}
+              </p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <p className="font-black text-slate-900 truncate text-sm">
-              {user?.name ?? 'Employee'}
-            </p>
-            <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] mt-1">
-              {user?.role ?? 'User'}
-            </p>
+
+          <div className="mt-3 text-xs text-yellow-200/90 font-medium">
+            {user?.employeeDetails?.basic?.department || 'Employee Self-Service'}
           </div>
         </div>
 
         {/* NAVIGATION */}
-        <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1 custom-scrollbar">
+        <nav className="flex-1 px-4 py-5 space-y-1 overflow-y-auto custom-scrollbar">
           {menu.map(({ label, key, icon: Icon }) => {
             const isActive = key === activeSection;
             return (
@@ -89,41 +95,34 @@ export default function EmpSidebar({ isOpen, onClose }) {
                 key={key}
                 onClick={() => handleNavClick(key)}
                 className={`
-                  group flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all duration-200
-                  ${isActive 
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' 
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}
+                  flex items-center gap-3 px-4 py-2.5 rounded-lg cursor-pointer
+                  transition-all duration-200 ease-out text-sm
+                  ${
+                    isActive
+                      ? 'bg-yellow-400 text-primary font-bold shadow-sm'
+                      : 'text-blue-100 hover:bg-white/10 hover:text-white hover:translate-x-0.5 font-medium'
+                  }
                 `}
               >
-                <Icon 
-                  size={20} 
-                  className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-indigo-500'} 
-                />
-                <span className={`text-sm ${isActive ? 'font-black' : 'font-bold'}`}>
-                  {label}
-                </span>
-                
-                {/* Visual indicator for active item */}
-                {isActive && (
-                  <motion.div 
-                    layoutId="activePill"
-                    className="ml-auto w-1.5 h-1.5 bg-white rounded-full shadow-sm"
-                  />
-                )}
+                <Icon size={18} className={isActive ? 'text-primary' : 'text-blue-200'} />
+                <span>{label}</span>
               </div>
             );
           })}
         </nav>
 
-        {/* LOGOUT */}
-        <div className="p-4 border-t border-slate-50 bg-slate-50/30">
+        {/* FOOTER & LOGOUT */}
+        <div className="px-6 py-4 border-t border-yellow-400/20 flex flex-col gap-2">
           <button
             onClick={Employeelogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all font-bold text-sm"
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-blue-100 hover:bg-white/10 hover:text-white transition-all"
           >
-            <LogOut size={20} />
-            Logout
+            <LogOut size={16} />
+            <span>Sign Out</span>
           </button>
+          <div className="text-[10px] text-blue-200/80">
+            © 2026 Payroll System
+          </div>
         </div>
       </aside>
     </>

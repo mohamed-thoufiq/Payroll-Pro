@@ -39,105 +39,117 @@ export default function HRReimbursementApproval() {
   }, [activeTab]);
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow">
-      <h2 className="text-xl font-semibold mb-6">Reimbursement Management</h2>
-
-      {/* Tabs UI */}
-      <div className="flex space-x-4 border-b mb-6">
-        <button
-          onClick={() => setActiveTab("PENDING")}
-          className={`pb-2 px-4 text-sm font-medium transition-colors ${
-            activeTab === "PENDING"
-              ? "border-b-2 border-indigo-600 text-indigo-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          Pending Requests
-        </button>
-        <button
-          onClick={() => setActiveTab("APPROVED")}
-          className={`pb-2 px-4 text-sm font-medium transition-colors ${
-            activeTab === "APPROVED"
-              ? "border-b-2 border-indigo-600 text-indigo-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          Approved History
-        </button>
-        <button
-          onClick={() => setActiveTab("PAID")}
-          className={`pb-2 px-4 text-sm font-medium transition-colors ${
-            activeTab === "PAID"
-              ? "border-b-2 border-indigo-600 text-indigo-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          Paid History
-        </button>
-
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h2 className="text-xl font-semibold text-text-primary">Reimbursement Management</h2>
+        <p className="text-sm text-text-secondary mt-1">
+          Review, approve, and track employee expense claims
+        </p>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b text-left bg-gray-50">
-              <th className="p-3">Employee ID</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Amount</th>
-              <th className="p-3">Date</th>
-              <th className="p-3">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan="5" className="p-10 text-center animate-pulse">Loading data...</td></tr>
-            ) : data.length === 0 ? (
-              <tr><td colSpan="5" className="p-10 text-center text-gray-500">No {activeTab.toLowerCase()} requests found</td></tr>
-            ) : (
-              data.map((r) => (
-                <tr key={r._id} className="border-b hover:bg-gray-50 transition-colors">
-                  <td className="p-3 font-medium">{ r.employeeId}</td>
-                  <td className="p-3">
-                    <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-semibold">
-                      {r.category}
-                    </span>
-                  </td>
-                  <td className="p-3 font-semibold text-gray-900">₹{r.amount.toLocaleString()}</td>
-                  <td className="p-3 text-gray-500">
-                    {new Date(r.expenseDate).toLocaleDateString()}
-                  </td>
-                  <td className="p-3">
-                    {activeTab === "PENDING" && (
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => updateStatus(r._id, "APPROVED")}
-                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded shadow-sm"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => updateStatus(r._id, "REJECTED")}
-                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded shadow-sm"
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    )}
+      {/* Main Card */}
+      <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
+        {/* Tabs UI */}
+        <div className="flex space-x-2 border-b border-gray-200">
+          <button
+            onClick={() => setActiveTab("PENDING")}
+            className={`pb-3 px-4 text-sm font-medium transition-colors relative ${
+              activeTab === "PENDING"
+                ? "border-b-2 border-primary text-primary font-semibold"
+                : "text-text-secondary hover:text-text-primary"
+            }`}
+          >
+            Pending Requests
+          </button>
+          <button
+            onClick={() => setActiveTab("APPROVED")}
+            className={`pb-3 px-4 text-sm font-medium transition-colors relative ${
+              activeTab === "APPROVED"
+                ? "border-b-2 border-primary text-primary font-semibold"
+                : "text-text-secondary hover:text-text-primary"
+            }`}
+          >
+            Approved History
+          </button>
+          <button
+            onClick={() => setActiveTab("PAID")}
+            className={`pb-3 px-4 text-sm font-medium transition-colors relative ${
+              activeTab === "PAID"
+                ? "border-b-2 border-primary text-primary font-semibold"
+                : "text-text-secondary hover:text-text-primary"
+            }`}
+          >
+            Paid History
+          </button>
+        </div>
 
-                    {activeTab === "APPROVED" && (
-                      <span className="text-blue-600 font-medium">✓ Approved</span>
-                    )}
+        {/* Table Container */}
+        <div className="border border-gray-200 rounded-xl overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-muted text-text-secondary border-b border-gray-200 text-xs font-semibold uppercase tracking-wider">
+              <tr>
+                <th className="px-6 py-3.5">Employee ID</th>
+                <th className="px-6 py-3.5">Category</th>
+                <th className="px-6 py-3.5">Amount</th>
+                <th className="px-6 py-3.5">Date</th>
+                <th className="px-6 py-3.5 text-center">Action / Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {loading ? (
+                <tr><td colSpan="5" className="p-8 text-center text-primary font-medium">Loading claims...</td></tr>
+              ) : data.length === 0 ? (
+                <tr><td colSpan="5" className="p-8 text-center text-text-muted">No {activeTab.toLowerCase()} requests found</td></tr>
+              ) : (
+                data.map((r) => (
+                  <tr key={r._id} className="hover:bg-gray-50/80 transition-colors">
+                    <td className="px-6 py-4 font-medium text-text-primary">{r.employeeId}</td>
+                    <td className="px-6 py-4">
+                      <span className="px-2.5 py-1 bg-blue-50 text-primary border border-blue-100 rounded-full text-xs font-medium">
+                        {r.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-text-primary">₹{r.amount?.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-text-secondary text-xs">
+                      {new Date(r.expenseDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {activeTab === "PENDING" && (
+                        <div className="flex items-center justify-center space-x-2">
+                          <button
+                            onClick={() => updateStatus(r._id, "APPROVED")}
+                            className="bg-success hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm transition-colors"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => updateStatus(r._id, "REJECTED")}
+                            className="bg-danger hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm transition-colors"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
 
-                    {activeTab === "PAID" && (
-                      <span className="text-green-700 font-medium">💰 Paid</span>
-                    )}
+                      {activeTab === "APPROVED" && (
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          Approved
+                        </span>
+                      )}
 
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                      {activeTab === "PAID" && (
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-primary border border-blue-200">
+                          Paid
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

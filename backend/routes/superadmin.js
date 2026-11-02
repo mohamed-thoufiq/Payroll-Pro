@@ -61,7 +61,8 @@ router.get(
           $project: {
             _id: 0,
             month: 1,
-            netPay: "$totals.netPay"
+            netPay: "$totals.netPay",
+            gross: "$totals.gross"
           }
         },
         { $sort: { month: 1 } }
@@ -82,16 +83,62 @@ router.get(
           {
             $group: {
               _id: "$employeeSnapshot.department",
+              totalSalary: { $sum: "$netPay" },
               count: { $sum: 1 }
+            }
+          },
+          {
+            $match: {
+              totalSalary: { $gt: 0 }
             }
           },
           {
             $project: {
               _id: 0,
-              name: { $ifNull: ["$_id", "Unassigned"] },
-              value: "$count"
+              department: { $ifNull: ["$_id", "General"] },
+              name: { $ifNull: ["$_id", "General"] },
+              totalSalary: { $round: ["$totalSalary", 0] },
+              value: { $round: ["$totalSalary", 0] },
+              count: 1
             }
-          }
+          },
+          { $sort: { totalSalary: -1 } }
+        ]);
+      }
+
+      // Fallback if no department data from latestRun
+      if (!departmentStats || departmentStats.length === 0) {
+        departmentStats = await User.aggregate([
+          {
+            $match: {
+              organizationId: orgId,
+              role: "Employee",
+              status: "Active"
+            }
+          },
+          {
+            $group: {
+              _id: "$employeeDetails.organization.department",
+              totalSalary: { $sum: { $divide: [{ $ifNull: ["$employeeDetails.salary.ctc", 0] }, 12] } },
+              count: { $sum: 1 }
+            }
+          },
+          {
+            $match: {
+              totalSalary: { $gt: 0 }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              department: { $ifNull: ["$_id", "General"] },
+              name: { $ifNull: ["$_id", "General"] },
+              totalSalary: { $round: ["$totalSalary", 0] },
+              value: { $round: ["$totalSalary", 0] },
+              count: 1
+            }
+          },
+          { $sort: { totalSalary: -1 } }
         ]);
       }
 
@@ -111,7 +158,9 @@ router.get(
         overview,
         payrollTrend: payrollTrend.map((p) => ({
           month: p.month,
-          payroll: Math.round(p.netPay || 0)
+          total: Math.round(p.netPay || 0),
+          payroll: Math.round(p.netPay || 0),
+          gross: Math.round(p.gross || 0)
         })),
         departmentStats,
         meta: {

@@ -136,113 +136,122 @@ export default function Settings() {
   };
 
   // UI Variable constants
-  const labelClass = "text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1";
-  const inputClass = "w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all outline-none border border-slate-200 bg-slate-50 text-slate-700 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-60 disabled:cursor-not-allowed";
+  const labelClass = "text-xs font-semibold text-text-secondary uppercase tracking-wider block mb-1";
+  const inputClass = "w-full px-3.5 py-2 rounded-lg text-sm transition-all outline-none border border-gray-200 bg-white text-text-primary focus:border-primary focus:ring-1 focus:ring-primary disabled:bg-gray-50 disabled:text-text-muted disabled:cursor-not-allowed";
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center p-20 space-y-4">
-      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-      <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Initialising Settings...</p>
+    <div className="flex flex-col items-center justify-center p-16 space-y-3">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <p className="text-xs font-medium text-text-muted">Loading Organization Settings...</p>
     </div>
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-10 animate-in fade-in duration-500">
+    <div className="space-y-6">
       
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-           <h1 className="text-3xl font-black text-slate-800 tracking-tight">Organization Settings</h1>
-           <p className="text-sm font-medium text-slate-500">Configure your global business rules and compliance.</p>
+          <h2 className="text-xl font-semibold text-text-primary">Organization Settings</h2>
+          <p className="text-sm text-text-secondary mt-0.5">Configure company profile, statutory rules, and privilege delegations</p>
         </div>
         
-        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3 w-full md:w-auto">
-            {message.text && (
-              <div className={`px-4 py-2 rounded-xl flex items-center gap-2 text-xs font-black uppercase tracking-widest animate-in slide-in-from-top-2 ${message.type === 'error' ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`}>
-                  {message.type === 'error' ? <MdErrorOutline size={18}/> : <MdCheckCircle size={18}/>}
-                  {message.text}
-              </div>
-            )}
-            <button
-                onClick={toggleEditMode}
-                className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-sm transition-all shadow-lg active:scale-95 w-full sm:w-auto ${
-                  isEditing ? "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-none" : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200"
-                }`}
-            >
-                {isEditing ? <><MdClose size={20} /> Cancel Editing</> : <><MdEdit size={20} /> Edit Configurations</>}
-            </button>
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3 w-full sm:w-auto">
+          {message.text && (
+            <div className={`px-3 py-1.5 rounded-lg flex items-center gap-2 text-xs font-medium ${message.type === 'error' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`}>
+              {message.type === 'error' ? <MdErrorOutline size={16}/> : <MdCheckCircle size={16}/>}
+              {message.text}
+            </div>
+          )}
+          <button
+            onClick={toggleEditMode}
+            className={`flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all shadow-sm ${
+              isEditing 
+                ? "bg-white border border-gray-200 text-text-secondary hover:bg-gray-50" 
+                : "bg-primary hover:bg-primary-hover text-white"
+            }`}
+          >
+            {isEditing ? <><MdClose size={16} /> Cancel</> : <><MdEdit size={16} /> Edit Configurations</>}
+          </button>
         </div>
       </div>
 
-      {/* 1. COMPANY PROFILE - Glass-Slab Style */}
-      <div className="relative overflow-hidden rounded-3xl p-0.5 bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl shadow-indigo-100/50">
-        <div className="bg-white/95 backdrop-blur-md rounded-[22px] overflow-hidden">
-          <div className="p-6 border-b border-slate-100 flex items-center gap-3 bg-slate-50/50">
-            <MdBusiness className="text-indigo-600" size={24} />
-            <h2 className="text-lg font-black text-slate-800 tracking-tight">Company Profile</h2>
+      {/* 1. COMPANY PROFILE */}
+      <div className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-primary shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 bg-muted flex items-center gap-3">
+          <div className="p-2 bg-blue-50 text-primary rounded-lg border border-blue-100">
+            <MdBusiness size={18} />
           </div>
-          
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-1">
-              <label className={labelClass}>Organization Name</label>
-              <input disabled={!isEditing} className={inputClass} value={companyProfile.companyName} onChange={(e) => setCompanyProfile({...companyProfile, companyName: e.target.value})}/>
-            </div>
-            <div className="space-y-1">
-              <label className={labelClass}>Industry Type</label>
-              <input disabled={!isEditing} className={inputClass} value={companyProfile.industry} onChange={(e) => setCompanyProfile({...companyProfile, industry: e.target.value})}/>
-            </div>
-            <div className="space-y-1">
-              <label className={labelClass}>Financial Year Start</label>
-              <select disabled={!isEditing} className={inputClass} value={companyProfile.financialYearStart} onChange={(e) => setCompanyProfile({...companyProfile, financialYearStart: e.target.value})}>
-                <option value="">Select Month</option>
-                {['January','February','March','April','May','June','July','August','September','October','November','December'].map(m => <option key={m} value={m}>{m}</option>)}
-              </select>
-            </div>
-            <div className="space-y-1">
-              <label className={labelClass}>Financial Year End</label>
-              <select disabled={!isEditing} className={inputClass} value={companyProfile.financialYearEnd} onChange={(e) => setCompanyProfile({...companyProfile, financialYearEnd: e.target.value})}>
-                <option value="">Select Month</option>
-                {['January','February','March','April','May','June','July','August','September','October','November','December'].map(m => <option key={m} value={m}>{m}</option>)}
-              </select>
-            </div>
-            <div className="md:col-span-2 space-y-1">
-              <label className={labelClass}>Headquarters Location</label>
-              <div className="relative">
-                <MdLocationOn className="absolute left-4 top-3 text-slate-400" size={20} />
-                <textarea disabled={!isEditing} rows={2} className={`${inputClass} pl-12 resize-none`} value={companyProfile.location} onChange={(e) => setCompanyProfile({...companyProfile, location: e.target.value})} placeholder="Full registered address..."/>
-              </div>
-            </div>
+          <div>
+            <h3 className="text-base font-semibold text-text-primary">Company Profile</h3>
+            <p className="text-xs text-text-muted">Core business identity and accounting timeline</p>
           </div>
-          {isEditing && (
-            <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end">
-              <button onClick={saveCompanyProfile} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2.5 rounded-xl font-black text-sm shadow-lg shadow-indigo-100 active:scale-95 transition-all">
-                <MdSave size={20} /> Save Profile Changes
-              </button>
-            </div>
-          )}
         </div>
+        
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label className={labelClass}>Organization Name</label>
+            <input disabled={!isEditing} className={inputClass} value={companyProfile.companyName} onChange={(e) => setCompanyProfile({...companyProfile, companyName: e.target.value})}/>
+          </div>
+          <div>
+            <label className={labelClass}>Industry Type</label>
+            <input disabled={!isEditing} className={inputClass} value={companyProfile.industry} onChange={(e) => setCompanyProfile({...companyProfile, industry: e.target.value})}/>
+          </div>
+          <div>
+            <label className={labelClass}>Financial Year Start</label>
+            <select disabled={!isEditing} className={inputClass} value={companyProfile.financialYearStart} onChange={(e) => setCompanyProfile({...companyProfile, financialYearStart: e.target.value})}>
+              <option value="">Select Month</option>
+              {['January','February','March','April','May','June','July','August','September','October','November','December'].map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>Financial Year End</label>
+            <select disabled={!isEditing} className={inputClass} value={companyProfile.financialYearEnd} onChange={(e) => setCompanyProfile({...companyProfile, financialYearEnd: e.target.value})}>
+              <option value="">Select Month</option>
+              {['January','February','March','April','May','June','July','August','September','October','November','December'].map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          <div className="md:col-span-2">
+            <label className={labelClass}>Headquarters Location</label>
+            <div className="relative">
+              <MdLocationOn className="absolute left-3 top-2.5 text-text-muted" size={18} />
+              <textarea disabled={!isEditing} rows={2} className={`${inputClass} pl-9 resize-none`} value={companyProfile.location} onChange={(e) => setCompanyProfile({...companyProfile, location: e.target.value})} placeholder="Full registered address..."/>
+            </div>
+          </div>
+        </div>
+        {isEditing && (
+          <div className="px-6 py-3.5 bg-muted border-t border-gray-200 flex justify-end">
+            <button onClick={saveCompanyProfile} className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg font-semibold text-xs shadow-sm transition-all">
+              <MdSave size={16} /> Save Profile
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 2. STATUTORY CONFIG */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden relative">
-        <div className="absolute right-0 top-0 h-full w-1.5 bg-emerald-500" />
-        <div className="p-6 border-b border-slate-100 flex items-center gap-3 bg-slate-50/30">
-          <MdShield className="text-emerald-600" size={24} />
-          <h2 className="text-lg font-black text-slate-800 tracking-tight tracking-tight">Statutory Compliance Setup</h2>
+      <div className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-success shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 bg-muted flex items-center gap-3">
+          <div className="p-2 bg-emerald-50 text-success rounded-lg border border-emerald-100">
+            <MdShield size={18} />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-text-primary">Statutory Compliance Setup</h3>
+            <p className="text-xs text-text-muted">Tax rates, Provident Fund, State Insurance, and HRA policies</p>
+          </div>
         </div>
         
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* PF Section */}
-          <div className="bg-slate-50/50 p-5 rounded-2xl border border-slate-100 group transition-all hover:bg-white hover:shadow-md">
-            <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
-               <h3 className="font-black text-slate-700 text-xs uppercase tracking-widest">Provident Fund (PF)</h3>
-               <label className="relative inline-flex items-center cursor-pointer">
-                 <input type="checkbox" disabled={!isEditing} checked={statutory.pf.enabled} onChange={(e) => setStatutory(p => ({...p, pf: {...p.pf, enabled: e.target.checked}}))} className="sr-only peer" />
-                 <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 disabled:opacity-50"></div>
-               </label>
+          <div className="bg-muted p-4 rounded-lg border border-gray-200 space-y-3">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-2.5">
+              <span className="font-semibold text-text-primary text-xs uppercase tracking-wider">Provident Fund (PF)</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" disabled={!isEditing} checked={statutory.pf.enabled} onChange={(e) => setStatutory(p => ({...p, pf: {...p.pf, enabled: e.target.checked}}))} className="sr-only peer" />
+                <div className="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary disabled:opacity-50"></div>
+              </label>
             </div>
             {statutory.pf.enabled && (
-              <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2">
+              <div className="grid grid-cols-2 gap-3 pt-1">
                 <div><label className={labelClass}>Emp. Contrib (%)</label><input type="number" disabled={!isEditing} className={inputClass} value={statutory.pf.employeeContribution} onChange={(e) => setStatutory(p => ({...p, pf: {...p.pf, employeeContribution: Number(e.target.value)}}))}/></div>
                 <div><label className={labelClass}>Org. Contrib (%)</label><input type="number" disabled={!isEditing} className={inputClass} value={statutory.pf.employerContribution} onChange={(e) => setStatutory(p => ({...p, pf: {...p.pf, employerContribution: Number(e.target.value)}}))}/></div>
               </div>
@@ -250,16 +259,16 @@ export default function Settings() {
           </div>
 
           {/* ESI Section */}
-          <div className="bg-slate-50/50 p-5 rounded-2xl border border-slate-100 group transition-all hover:bg-white hover:shadow-md">
-            <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
-               <h3 className="font-black text-slate-700 text-xs uppercase tracking-widest">State Insurance (ESI)</h3>
-               <label className="relative inline-flex items-center cursor-pointer">
-                 <input type="checkbox" disabled={!isEditing} checked={statutory.esi.enabled} onChange={(e) => setStatutory(p => ({...p, esi: {...p.esi, enabled: e.target.checked}}))} className="sr-only peer" />
-                 <div className="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
-               </label>
+          <div className="bg-muted p-4 rounded-lg border border-gray-200 space-y-3">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-2.5">
+              <span className="font-semibold text-text-primary text-xs uppercase tracking-wider">State Insurance (ESI)</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" disabled={!isEditing} checked={statutory.esi.enabled} onChange={(e) => setStatutory(p => ({...p, esi: {...p.esi, enabled: e.target.checked}}))} className="sr-only peer" />
+                <div className="w-9 h-5 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-success"></div>
+              </label>
             </div>
             {statutory.esi.enabled && (
-              <div className="grid grid-cols-3 gap-3 animate-in slide-in-from-top-2">
+              <div className="grid grid-cols-3 gap-2.5 pt-1">
                 <div><label className={labelClass}>Emp (%)</label><input type="number" disabled={!isEditing} className={inputClass} value={statutory.esi.employeeContribution} onChange={(e) => setStatutory(p => ({...p, esi: {...p.esi, employeeContribution: Number(e.target.value)}}))}/></div>
                 <div><label className={labelClass}>Org (%)</label><input type="number" disabled={!isEditing} className={inputClass} value={statutory.esi.employerContribution} onChange={(e) => setStatutory(p => ({...p, esi: {...p.esi, employerContribution: Number(e.target.value)}}))}/></div>
                 <div><label className={labelClass}>Wage Cap</label><input type="number" disabled={!isEditing} className={inputClass} value={statutory.esi.wageLimit} onChange={(e) => setStatutory(p => ({...p, esi: {...p.esi, wageLimit: Number(e.target.value)}}))}/></div>
@@ -268,76 +277,89 @@ export default function Settings() {
           </div>
 
           {/* HRA Section */}
-          <div className="bg-slate-50/50 p-5 rounded-2xl border border-slate-100 group transition-all hover:bg-white hover:shadow-md">
-            <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
-               <div className="flex items-center gap-2 text-indigo-600"><MdHome size={20}/><h3 className="font-black text-slate-700 text-xs uppercase tracking-widest">House Rent (HRA)</h3></div>
-               <label className="relative inline-flex items-center cursor-pointer">
-                 <input type="checkbox" disabled={!isEditing} checked={statutory.hra.enabled} onChange={(e) => setStatutory(p => ({...p, hra: {...p.hra, enabled: e.target.checked}}))} className="sr-only peer" />
-                 <div className="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-               </label>
+          <div className="bg-muted p-4 rounded-lg border border-gray-200 space-y-3">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-2.5">
+              <div className="flex items-center gap-1.5"><MdHome size={16} className="text-primary"/><span className="font-semibold text-text-primary text-xs uppercase tracking-wider">House Rent (HRA)</span></div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" disabled={!isEditing} checked={statutory.hra.enabled} onChange={(e) => setStatutory(p => ({...p, hra: {...p.hra, enabled: e.target.checked}}))} className="sr-only peer" />
+                <div className="w-9 h-5 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+              </label>
             </div>
             {statutory.hra.enabled && (
-              <div className="flex items-end gap-6 animate-in slide-in-from-top-2">
+              <div className="flex items-end gap-4 pt-1">
                 <div className="flex-1"><label className={labelClass}>Percentage of Basic (%)</label><input type="number" disabled={!isEditing} className={inputClass} value={statutory.hra.percentageOfBasic} onChange={(e) => setStatutory(p => ({...p, hra: {...p.hra, percentageOfBasic: Number(e.target.value)}}))}/></div>
-                <label className="flex items-center gap-2 pb-3 cursor-pointer"><input type="checkbox" disabled={!isEditing} checked={statutory.hra.taxExempt} onChange={(e) => setStatutory(p => ({...p, hra: {...p.hra, taxExempt: e.target.checked}}))} className="w-5 h-5 accent-indigo-600 rounded" /><span className="text-xs font-black text-slate-600 uppercase">Exempt</span></label>
+                <label className="flex items-center gap-1.5 pb-2.5 cursor-pointer"><input type="checkbox" disabled={!isEditing} checked={statutory.hra.taxExempt} onChange={(e) => setStatutory(p => ({...p, hra: {...p.hra, taxExempt: e.target.checked}}))} className="w-4 h-4 accent-primary rounded" /><span className="text-xs font-medium text-text-secondary">Tax Exempt</span></label>
               </div>
             )}
           </div>
 
           {/* Professional Tax */}
-          <div className="bg-slate-50/50 p-5 rounded-2xl border border-slate-100 group transition-all hover:bg-white hover:shadow-md">
-            <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
-               <h3 className="font-black text-slate-700 text-xs uppercase tracking-widest">Prof. Tax (PT)</h3>
-               <label className="relative inline-flex items-center cursor-pointer">
-                 <input type="checkbox" disabled={!isEditing} checked={statutory.professionalTax.enabled} onChange={(e) => setStatutory(p => ({...p, professionalTax: {...p.professionalTax, enabled: e.target.checked}}))} className="sr-only peer" />
-                 <div className="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-               </label>
+          <div className="bg-muted p-4 rounded-lg border border-gray-200 space-y-3">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-2.5">
+              <span className="font-semibold text-text-primary text-xs uppercase tracking-wider">Professional Tax (PT)</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" disabled={!isEditing} checked={statutory.professionalTax.enabled} onChange={(e) => setStatutory(p => ({...p, professionalTax: {...p.professionalTax, enabled: e.target.checked}}))} className="sr-only peer" />
+                <div className="w-9 h-5 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+              </label>
             </div>
             {statutory.professionalTax.enabled && (
-              <div className="animate-in slide-in-from-top-2"><label className={labelClass}>Registered State</label><select disabled={!isEditing} className={inputClass} value={statutory.professionalTax.state} onChange={(e) => setStatutory(p => ({...p, professionalTax: {...p.professionalTax, state: e.target.value}}))}><option value="">Select State</option><option value="Tamil Nadu">Tamil Nadu</option><option value="Karnataka">Karnataka</option><option value="Maharashtra">Maharashtra</option></select></div>
+              <div className="pt-1"><label className={labelClass}>Registered State</label><select disabled={!isEditing} className={inputClass} value={statutory.professionalTax.state} onChange={(e) => setStatutory(p => ({...p, professionalTax: {...p.professionalTax, state: e.target.value}}))}><option value="">Select State</option><option value="Tamil Nadu">Tamil Nadu</option><option value="Karnataka">Karnataka</option><option value="Maharashtra">Maharashtra</option></select></div>
             )}
           </div>
         </div>
         {isEditing && (
-          <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end">
-            <button onClick={saveStatutory} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-2.5 rounded-xl font-black text-sm shadow-lg shadow-emerald-100 active:scale-95 transition-all">
-              <MdSave size={20} /> Update Statutory Settings
+          <div className="px-6 py-3.5 bg-muted border-t border-gray-200 flex justify-end">
+            <button onClick={saveStatutory} className="flex items-center gap-1.5 bg-success hover:bg-green-700 text-white px-5 py-2 rounded-lg font-semibold text-xs shadow-sm transition-all">
+              <MdSave size={16} /> Save Statutory Rules
             </button>
           </div>
         )}
       </div>
 
       {/* 3. ACCESS CONTROL */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden relative">
-        <div className="absolute right-0 top-0 h-full w-1.5 bg-purple-600" />
-        <div className="p-6 border-b border-slate-100 flex items-center gap-3 bg-slate-50/30">
-          <MdGroup className="text-purple-600" size={24} />
-          <h2 className="text-lg font-black text-slate-800 tracking-tight">System Role Privileges</h2>
+      <div className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-warning shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 bg-muted flex items-center gap-3">
+          <div className="p-2 bg-yellow-50 text-warning rounded-lg border border-yellow-200">
+            <MdGroup size={18} />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-text-primary">System Role Privileges</h3>
+            <p className="text-xs text-text-muted">Module and operation rights assigned to roles</p>
+          </div>
         </div>
         
-        <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Payroll Admin */}
-          <div className="border border-slate-100 rounded-2xl p-5 bg-slate-50/30">
-            <div className="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2"><div className="w-1.5 h-4 bg-purple-500 rounded-full" /><h3 className="font-black text-slate-700 text-[10px] uppercase tracking-widest">Payroll Admin</h3></div>
-            <div className="space-y-4">
+          <div className="border border-gray-200 rounded-lg p-4 bg-muted space-y-3">
+            <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
+              <div className="w-1.5 h-3.5 bg-primary rounded-full" />
+              <h4 className="font-semibold text-text-primary text-xs uppercase tracking-wider">Payroll Admin</h4>
+            </div>
+            <div className="space-y-2.5">
               <AccessCheckbox label="Process Payroll" checked={accessLevels.payrollAdmin.canProcessPayroll} disabled={!isEditing} onChange={(val) => setAccessLevels(p => ({...p, payrollAdmin: {...p.payrollAdmin, canProcessPayroll: val}}))} />
               <AccessCheckbox label="Approve Payroll" checked={accessLevels.payrollAdmin.canApprovePayroll} disabled={!isEditing} onChange={(val) => setAccessLevels(p => ({...p, payrollAdmin: {...p.payrollAdmin, canApprovePayroll: val}}))} />
             </div>
           </div>
 
           {/* HR Admin */}
-          <div className="border border-slate-100 rounded-2xl p-5 bg-slate-50/30">
-            <div className="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2"><div className="w-1.5 h-4 bg-indigo-500 rounded-full" /><h3 className="font-black text-slate-700 text-[10px] uppercase tracking-widest">HR Admin</h3></div>
-            <div className="space-y-4">
+          <div className="border border-gray-200 rounded-lg p-4 bg-muted space-y-3">
+            <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
+              <div className="w-1.5 h-3.5 bg-success rounded-full" />
+              <h4 className="font-semibold text-text-primary text-xs uppercase tracking-wider">HR Admin</h4>
+            </div>
+            <div className="space-y-2.5">
               <AccessCheckbox label="Manage Workforce" checked={accessLevels.hrAdmin.canManageEmployees} disabled={!isEditing} onChange={(val) => setAccessLevels(p => ({...p, hrAdmin: {...p.hrAdmin, canManageEmployees: val}}))} />
               <AccessCheckbox label="Manage Salaries" checked={accessLevels.hrAdmin.canManageSalaryStructure} disabled={!isEditing} onChange={(val) => setAccessLevels(p => ({...p, hrAdmin: {...p.hrAdmin, canManageSalaryStructure: val}}))} />
             </div>
           </div>
 
-           {/* Finance Team */}
-           <div className="border border-slate-100 rounded-2xl p-5 bg-slate-50/30">
-            <div className="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2"><div className="w-1.5 h-4 bg-blue-500 rounded-full" /><h3 className="font-black text-slate-700 text-[10px] uppercase tracking-widest">Finance Operations</h3></div>
-            <div className="space-y-4">
+          {/* Finance Team */}
+          <div className="border border-gray-200 rounded-lg p-4 bg-muted space-y-3">
+            <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
+              <div className="w-1.5 h-3.5 bg-warning rounded-full" />
+              <h4 className="font-semibold text-text-primary text-xs uppercase tracking-wider">Finance Operations</h4>
+            </div>
+            <div className="space-y-2.5">
               <AccessCheckbox label="Analytics Access" checked={accessLevels.finance.canViewReports} disabled={!isEditing} onChange={(val) => setAccessLevels(p => ({...p, finance: {...p.finance, canViewReports: val}}))} />
               <AccessCheckbox label="Data Export" checked={accessLevels.finance.canExportData} disabled={!isEditing} onChange={(val) => setAccessLevels(p => ({...p, finance: {...p.finance, canExportData: val}}))} />
             </div>
@@ -345,9 +367,9 @@ export default function Settings() {
         </div>
 
         {isEditing && (
-          <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end">
-            <button onClick={saveAccessLevels} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-8 py-2.5 rounded-xl font-black text-sm shadow-lg shadow-purple-100 active:scale-95 transition-all">
-              <MdSave size={20} /> Synchronize Access
+          <div className="px-6 py-3.5 bg-muted border-t border-gray-200 flex justify-end">
+            <button onClick={saveAccessLevels} className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg font-semibold text-xs shadow-sm transition-all">
+              <MdSave size={16} /> Save Privileges
             </button>
           </div>
         )}
@@ -359,9 +381,9 @@ export default function Settings() {
 // Sub-component for Access Level Checkboxes to keep code clean
 function AccessCheckbox({ label, checked, disabled, onChange }) {
   return (
-    <label className={`flex items-center gap-3 transition-opacity ${disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:translate-x-1 transition-transform'}`}>
-      <input type="checkbox" disabled={disabled} checked={checked} onChange={(e) => onChange(e.target.checked)} className="w-5 h-5 accent-indigo-600 rounded cursor-pointer" />
-      <span className="text-sm font-bold text-slate-600">{label}</span>
+    <label className={`flex items-center gap-2.5 transition-opacity ${disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
+      <input type="checkbox" disabled={disabled} checked={checked} onChange={(e) => onChange(e.target.checked)} className="w-4 h-4 accent-primary rounded cursor-pointer" />
+      <span className="text-xs font-medium text-text-secondary">{label}</span>
     </label>
   );
 }

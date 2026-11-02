@@ -4,37 +4,47 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Main Brand Colors
+        // Core Theme from C:\HTML\Payroll-frontend
+        primary: {
+          DEFAULT: '#2563EB', // Blue
+          hover: '#1D4ED8',
+          light: '#DBEAFE',
+          dark: '#1E40AF',
+        },
+        success: '#16A34A',     // Green
+        danger: '#DC2626',      // Red
+        warning: '#F59E0B',     // Yellow
+
+        accent: {
+          yellow: '#FACC15',    // Gold Yellow
+          hover: '#EAB308',
+        },
+
+        surface: '#FFFFFF',
+        muted: '#F1F5F9',
+        background: '#F8FAFC',
+
+        text: {
+          primary: '#0F172A',
+          secondary: '#475569',
+          muted: '#94A3B8',
+        },
+
+        // Backward compatibility mappings aligned to the new theme
         brand: {
-          light: '#EEF2FF', // Indigo-50
-          DEFAULT: '#6366F1', // Indigo-500
-          dark: '#4F46E5',    // Indigo-600
-          accent: '#8B5CF6',  // Violet-500
+          light: '#EFF6FF',
+          DEFAULT: '#2563EB',
+          dark: '#1D4ED8',
+          accent: '#FACC15',
         },
-        
-        // Semantic Status Colors
-        success: '#10B981', // Emerald
-        danger: '#EF4444',  // Red
-        warning: '#F59E0B', // Amber
-        info: '#3B82F6',    // Blue
-
-        // Neutral Surface & Backgrounds
-        surface: {
-          50: '#F8FAFC',  // Slate-50 (App Background)
-          100: '#F1F5F9', // Slate-100 (Sidebar/Card Background)
-          200: '#E2E8F0', // Slate-200 (Borders)
-          DEFAULT: '#FFFFFF',
-        },
-
-        // Text Hierarchy
         content: {
-          primary: '#0F172A',   // Slate-900 (Headings)
-          secondary: '#334155', // Slate-700 (Body)
-          muted: '#64748B',     // Slate-500 (Small text)
-          subtle: '#94A3B8',    // Slate-400 (Placeholders)
+          primary: '#0F172A',
+          secondary: '#475569',
+          muted: '#64748B',
+          subtle: '#94A3B8',
         },
       },
     },
   },
   plugins: [],
-}
+};

@@ -45,7 +45,7 @@ const Unauthorized = () => {
             </Link>
             
             <Link
-              to="/employeeLogin"
+              to="/employeelogin"
               className="text-slate-500 hover:text-indigo-600 font-bold text-xs uppercase tracking-widest transition-colors"
             >
               Go to Employee Login

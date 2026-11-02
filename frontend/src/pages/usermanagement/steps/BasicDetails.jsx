@@ -4,8 +4,9 @@ import { basicSchema } from "../../../validation/employeeScemas";
 import { checkEmployeeExists } from "../../../api/employeeApi";
 import { useEmployeeForm } from "../context/EmployeeFormContext";
 import { useState, useContext, useEffect } from "react"; 
-import { AuthContext } from '..//..//..//context/AuthContext';
+import { AuthContext } from '../../../context/AuthContext';
 import { MdInfoOutline, MdLockOutline, MdEmail, MdBadge } from "react-icons/md";
+import { API_URL } from "../../../config/api.js";
 
 const BasicDetails = ({ onNext }) => {
   const { update, employee } = useEmployeeForm();
@@ -23,7 +24,7 @@ const BasicDetails = ({ onNext }) => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/organization/settings", {
+        const res = await fetch(`${API_URL}/api/organization/settings`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

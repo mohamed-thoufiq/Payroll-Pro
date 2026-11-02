@@ -5,6 +5,7 @@ import { useEmployeeForm } from "../context/EmployeeFormContext";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../context/AuthContext";
 import { MdPayments, MdArrowBack, MdArrowForward } from "react-icons/md";
+import { API_URL } from "../../../config/api.js";
 
 const SalaryDetails = ({ onNext, onBack }) => {
   const { update, employee } = useEmployeeForm();
@@ -16,7 +17,7 @@ const SalaryDetails = ({ onNext, onBack }) => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/organization/settings", {
+        const res = await fetch(`${API_URL}/api/organization/settings`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();

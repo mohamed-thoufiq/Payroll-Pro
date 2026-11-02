@@ -3,6 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import { io } from "socket.io-client";
 import { FiBell, FiCheckCircle, FiClock, FiTrash2 } from "react-icons/fi";
 import api from "../utils/api";
+import { API_URL } from "../config/api.js";
 
 export default function NotificationCenter() {
   const { user, token } = useContext(AuthContext);
@@ -19,7 +20,7 @@ export default function NotificationCenter() {
     fetchAll();
 
     // 2. Setup Real-time Listener
-    const socket = io("http://localhost:5000", { auth: { token } });
+    const socket = io(API_URL, { auth: { token } });
     
     socket.emit("join", id);
     
@@ -39,36 +40,49 @@ export default function NotificationCenter() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <div className="flex justify-between items-center border-b pb-6">
-        <h2 className="text-3xl font-black text-slate-900 uppercase italic">Alerts</h2>
-        <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-black">
-          {notifications.filter(n => !n.isRead).length} NEW
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-xl font-semibold text-text-primary flex items-center gap-2">
+            <FiBell className="text-primary text-xl" /> Notifications & Alerts
+          </h2>
+          <p className="text-sm text-text-secondary mt-0.5">Stay updated with payroll cycles, statutory tasks, and approval requests</p>
+        </div>
+        <span className="bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
+          {notifications.filter(n => !n.isRead).length} New
         </span>
       </div>
 
-      <div className="space-y-4">
-        {notifications.map((n) => (
-          <div 
-            key={n._id}
-            onClick={() => !n.isRead && markAsRead(n._id)}
-            className={`p-6 rounded-[2rem] border-2 transition-all cursor-pointer flex gap-4
-              ${n.isRead ? 'bg-slate-50 border-transparent opacity-60' : 'bg-white border-indigo-100 shadow-xl shadow-indigo-50'}`}
-          >
-            <div className={`p-4 rounded-2xl ${n.isRead ? 'bg-slate-200' : 'bg-indigo-100 text-indigo-600'}`}>
-              <FiBell size={24} />
-            </div>
-            <div className="flex-1">
-              <div className="flex justify-between">
-                <h4 className="font-black text-slate-800">{n.title}</h4>
-                <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1">
-                  <FiClock /> {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
+      <div className="space-y-3">
+        {notifications.length > 0 ? (
+          notifications.map((n) => (
+            <div 
+              key={n._id}
+              onClick={() => !n.isRead && markAsRead(n._id)}
+              className={`p-4 rounded-xl border border-gray-200 transition-all cursor-pointer flex gap-4 shadow-sm hover:shadow-md
+                ${n.isRead ? 'bg-gray-50/70 opacity-75' : 'bg-white border-l-4 border-l-primary'}`}
+            >
+              <div className={`p-2.5 rounded-lg shrink-0 flex items-center justify-center self-start ${n.isRead ? 'bg-muted text-text-muted' : 'bg-blue-50 text-primary border border-blue-100'}`}>
+                <FiBell size={20} />
               </div>
-              <p className="text-sm text-slate-500 font-medium mt-1">{n.message}</p>
+              <div className="flex-1">
+                <div className="flex justify-between items-start gap-2">
+                  <h4 className="font-semibold text-text-primary text-sm">{n.title}</h4>
+                  <span className="text-xs text-text-muted flex items-center gap-1 shrink-0">
+                    <FiClock size={12} /> {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                <p className="text-xs text-text-secondary mt-1 leading-relaxed">{n.message}</p>
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="py-16 text-center bg-white rounded-xl border border-dashed border-gray-200">
+            <FiBell className="mx-auto text-text-muted mb-2" size={32} />
+            <p className="text-sm font-medium text-text-muted">No notifications received yet</p>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

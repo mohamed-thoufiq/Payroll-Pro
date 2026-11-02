@@ -11,7 +11,18 @@ const router = express.Router();
 const superadmin="Super Admin"
 const hradmin="HR Admin"
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({
+  dest: 'uploads/',
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext === '.csv' || file.mimetype === 'text/csv' || file.mimetype === 'application/vnd.ms-excel') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only CSV files are allowed'));
+    }
+  }
+});
 /**
  * GET ALL USERS (Super Admin + HR Admin)
  */
@@ -149,7 +160,19 @@ router.put(
         });
       }
 
-      Object.assign(user, req.body);
+      // Safe update - prevent mass assignment & unauthorized privilege escalation
+      const { name, employeeDetails, status, role } = req.body;
+      if (typeof name === 'string' && name.trim()) user.name = name.trim();
+      if (status && ['Active', 'Inactive'].includes(status)) user.status = status;
+      if (employeeDetails && typeof employeeDetails === 'object') {
+        user.employeeDetails = {
+          ...(user.employeeDetails?.toObject?.() || user.employeeDetails || {}),
+          ...employeeDetails
+        };
+      }
+      if (role && role !== 'Super Admin' && ['Payroll Admin', 'HR Admin', 'Employee', 'Finance'].includes(role)) {
+        user.role = role;
+      }
       await user.save();
 
       res.status(200).json({
@@ -181,8 +204,8 @@ router.patch(
         return res.status(400).json({ message: "Invalid status" });
       }
 
-      const user = await User.findByIdAndUpdate(
-        req.params.id,
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.id, organizationId: req.user.organizationId },
         { status },
         { new: true }
       );

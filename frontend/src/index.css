@@ -15,6 +15,17 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Unslop Typography: Tabular figures for numbers, tables and metrics */
+.tabular-nums,
+table,
+td,
+th,
+[data-numeric="true"] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
 @keyframes sweep {
   100% { transform: translateX(250%); }
 }

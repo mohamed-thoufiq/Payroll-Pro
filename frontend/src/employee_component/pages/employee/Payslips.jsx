@@ -3,6 +3,7 @@ import { FiFileText, FiEye, FiX, FiDownload, FiInfo } from "react-icons/fi";
 import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { API_URL } from "../../../config/api.js";
 
 export default function Payslips() {
   const [payslips, setPayslips] = useState([]);
@@ -15,7 +16,7 @@ export default function Payslips() {
         setLoading(true);
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "http://localhost:5000/api/payslips/my-payslips",
+          `${API_URL}/api/payslips/my-payslips`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setPayslips(res.data);
@@ -32,7 +33,7 @@ export default function Payslips() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        `http://localhost:5000/api/payslips/${id}`,
+        `${API_URL}/api/payslips/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSelectedPayslip(res.data);
@@ -43,56 +44,54 @@ export default function Payslips() {
 
   return (
     <div className="max-w-6xl mx-auto p-8 space-y-10">
-      {/* Header Area */}
-      <div className="flex flex-col gap-1">
-        <h2 className="flex items-center gap-3 text-3xl font-extrabold text-slate-900">
-          <div className="p-2 bg-blue-600 text-white rounded-lg shadow-blue-200 shadow-lg">
-             <FiFileText size={24} />
-          </div>
+      {/* Header Area matching C:\HTML\Payroll-frontend */}
+      <div>
+        <h2 className="flex items-center gap-2 text-xl font-semibold text-text-primary">
+          <FiFileText size={20} className="text-primary" />
           My Payslips
         </h2>
-        <p className="text-slate-500 font-medium ml-12">
-          Securely access and download your monthly earnings
+        <p className="text-sm text-text-secondary mt-1">
+          Securely access and download your monthly salary statements
         </p>
       </div>
 
       {/* Modern Table Container */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-100 overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
-          <thead className="bg-slate-50 border-b border-slate-200">
+          <thead className="bg-muted text-text-secondary border-b border-gray-200">
             <tr>
-              <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest">Month</th>
-              <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest text-right">Gross Amount</th>
-              <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest text-right">Deductions</th>
-              <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest text-right">Reimbursements</th>
-              <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest text-right">Net Pay</th>
-              <th className="px-6 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest text-center">Action</th>
+              <th className="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider">Month</th>
+              <th className="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-right">Gross Amount</th>
+              <th className="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-right">Deductions</th>
+              <th className="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-right">Reimbursements</th>
+              <th className="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-right">Net Pay</th>
+              <th className="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-center">Action</th>
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-gray-100 text-sm">
             {!loading &&
               payslips.map((p) => (
-                <tr key={p._id} className="hover:bg-slate-50/80 transition-all group">
-                  <td className="px-6 py-5 font-bold text-slate-700">{p.month}</td>
-                  <td className="px-6 py-5 text-right font-medium text-slate-600">{money(p.gross)}</td>
-                  <td className="px-6 py-5 text-right text-rose-500 font-semibold">
+                <tr key={p._id} className="hover:bg-gray-50/80 transition-colors">
+                  <td className="px-6 py-4 font-semibold text-text-primary">{p.month}</td>
+                  <td className="px-6 py-4 text-right font-medium text-text-secondary">{money(p.gross)}</td>
+                  <td className="px-6 py-4 text-right text-danger font-medium">
                     -{money(p.deductions?.total)}
                   </td>
-                  <td className="px-6 py-5 text-right text-emerald-600 font-semibold">
+                  <td className="px-6 py-4 text-right text-success font-medium">
                     +{money(p.reimbursements?.total || 0)}
                   </td>
-                  <td className="px-6 py-5 text-right">
-                    <span className="px-4 py-1.5 bg-emerald-50 text-emerald-700 rounded-full font-bold text-sm">
-                        {money(p.netPay)}
+                  <td className="px-6 py-4 text-right">
+                    <span className="font-semibold text-text-primary">
+                      {money(p.netPay)}
                     </span>
                   </td>
-                  <td className="px-6 py-5 text-center">
+                  <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => viewPayslip(p._id)}
-                      className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-white hover:shadow-md hover:border-blue-400 hover:text-blue-600 transition-all"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-semibold text-text-secondary hover:text-primary hover:border-primary hover:bg-blue-50/50 transition-all"
                     >
-                      <FiEye /> View Details
+                      <FiEye size={14} /> View Details
                     </button>
                   </td>
                 </tr>
@@ -101,7 +100,7 @@ export default function Payslips() {
         </table>
 
         {loading && (
-          <div className="p-20 text-center text-slate-400 font-medium animate-pulse">
+          <div className="p-16 text-center text-text-muted font-medium animate-pulse">
             Fetching your statements...
           </div>
         )}

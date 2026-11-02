@@ -18,10 +18,12 @@ router.post("/employee/login", employeeLogin);
 // ==================== SUPER ADMIN REGISTRATION ====================
 router.post('/register-super-admin', async (req, res) => {
   console.log('📝 Registration request received');
-  console.log('📦 Request body:', req.body);
   
   try {
-    const { name, email, password, companyName } = req.body;
+    const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
+    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    const password = typeof req.body.password === 'string' ? req.body.password : '';
+    const companyName = typeof req.body.companyName === 'string' ? req.body.companyName.trim() : '';
 
     // Validation
     if (!name || !email || !password || !companyName) {
@@ -90,7 +92,7 @@ router.post('/register-super-admin', async (req, res) => {
         onboardingCompleted: false
       },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '24h' }
     );
 
     console.log('✅ Token generated');
@@ -123,7 +125,8 @@ router.post('/register-super-admin', async (req, res) => {
 // ==================== LOGIN ====================
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    const password = typeof req.body.password === 'string' ? req.body.password : '';
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password required' });
@@ -153,7 +156,7 @@ router.post('/login', async (req, res) => {
         onboardingCompleted: user.onboardingCompleted
       },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '24h' }
     );
 
     res.json({
@@ -226,7 +229,7 @@ router.get('/google/callback', async (req, res, next) => {
           onboardingCompleted: user.onboardingCompleted
         },
         process.env.JWT_SECRET,
-        { expiresIn: '7d' }
+        { expiresIn: '24h' }
       );
 
       console.log('🔐 Token generated');

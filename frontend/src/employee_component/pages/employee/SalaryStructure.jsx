@@ -7,6 +7,7 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { API_URL } from "../../../config/api.js";
 
 
 export default function SalaryStructure() {
@@ -26,7 +27,7 @@ export default function SalaryStructure() {
   useEffect(() => {
     const fetchOrgSettings = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/organization/settings", {
+        const res = await fetch(`${API_URL}/api/organization/settings`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const result = await res.json();
@@ -129,67 +130,69 @@ export default function SalaryStructure() {
   }).format(val || 0);
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center p-20 gap-4 animate-pulse">
-       <div className="w-12 h-12 rounded-full border-4 border-indigo-100 border-t-indigo-600 animate-spin" />
-       <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Syncing Org Compliance...</p>
+    <div className="flex flex-col items-center justify-center p-16 space-y-3">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <p className="text-xs font-medium text-text-muted">Loading Salary Structure...</p>
     </div>
   );
 
   const chartData = [
-    { name: 'Basic', value: b.basicSalary, color: '#6366F1' },
-    { name: 'HRA', value: b.hra, color: '#8B5CF6' },
-    { name: 'Allowance', value: b.specialAllowance, color: '#10B981' },
-    { name: 'Deductions', value: b.totalDeductions, color: '#F43F5E' },
+    { name: 'Basic', value: b.basicSalary, color: '#2563EB' },
+    { name: 'HRA', value: b.hra, color: '#FACC15' },
+    { name: 'Allowance', value: b.specialAllowance, color: '#16A34A' },
+    { name: 'Deductions', value: b.totalDeductions, color: '#DC2626' },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-700">
+    <div className="space-y-6">
       
       {/* 1. HEADER SECTION */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-            <MdReceiptLong className="text-indigo-600" /> Salary Breakdown
-          </h1>
-          <p className="text-sm font-medium text-slate-500 mt-1 uppercase tracking-widest text-[10px]">
+          <h2 className="text-xl font-semibold text-text-primary flex items-center gap-2">
+            <MdReceiptLong className="text-primary text-2xl" /> Salary Structure
+          </h2>
+          <p className="text-sm text-text-secondary mt-0.5">
             Statutory Period FY 2025-26 • {orgConfig?.statutoryConfig?.professionalTax?.state || "Standard"}
           </p>
         </div>
         <button 
           onClick={downloadSalaryPDF}
-          className="flex items-center gap-2 bg-slate-900 text-white px-8 py-3 rounded-2xl font-black text-xs shadow-xl active:scale-95 transition-all hover:bg-slate-800"
+          className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg font-semibold text-xs shadow-sm transition-colors"
         >
-          <MdDownload size={20} /> DOWNLOAD DETAILED PDF
+          <MdDownload size={18} /> Download Detailed PDF
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* 2. LEFT: THE GLASS-SLAB DATA TABLE */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden relative group">
-            <div className="absolute right-0 top-1/4 bottom-1/4 w-1.5 rounded-l-full bg-indigo-600" />
-            <div className="p-6 bg-slate-50/50 border-b border-slate-100 flex justify-between items-center px-8">
-               <h3 className="font-black text-slate-800 text-xs uppercase tracking-widest">Monthly Itemized Components</h3>
-               <MdAccountBalanceWallet className="text-slate-300" size={24} />
+        {/* 2. LEFT: DATA TABLE */}
+        <div className="lg:col-span-2 space-y-5">
+          <div className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-primary shadow-sm overflow-hidden">
+            <div className="px-6 py-4 bg-muted border-b border-gray-200 flex justify-between items-center">
+              <div>
+                <h3 className="font-semibold text-text-primary text-sm">Monthly Itemized Components</h3>
+                <p className="text-xs text-text-muted">Standard earnings and statutory deduction items</p>
+              </div>
+              <MdAccountBalanceWallet className="text-primary" size={22} />
             </div>
             
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50/30">
-                    <th className="px-8 py-5">Earnings & Benefits</th>
-                    <th className="px-8 py-5 text-right">Credit (₹)</th>
+                  <tr className="text-xs font-semibold text-text-secondary uppercase tracking-wider bg-muted/60 border-b border-gray-200">
+                    <th className="px-6 py-3">Earnings & Benefits</th>
+                    <th className="px-6 py-3 text-right">Credit (₹)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-gray-200">
                   <BreakdownRow label="Basic Salary" value={b.basicSalary} type="plus" />
-                  <BreakdownRow label={`House Rent Allowance (HRA)`} subLabel={`${orgConfig.statutoryConfig.hra.percentageOfBasic}% of Basic`} value={b.hra} type="plus" />
+                  <BreakdownRow label={`House Rent Allowance (HRA)`} subLabel={`${orgConfig?.statutoryConfig?.hra?.percentageOfBasic || 40}% of Basic`} value={b.hra} type="plus" />
                   <BreakdownRow label="Fixed Special Allowance" value={b.specialAllowance} type="plus" />
                   
-                  <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                    <th className="px-8 py-5">Statutory Deductions</th>
-                    <th className="px-8 py-5 text-right">Debit (₹)</th>
+                  <tr className="bg-muted/60 text-xs font-semibold text-text-secondary uppercase tracking-wider border-y border-gray-200">
+                    <th className="px-6 py-3">Statutory Deductions</th>
+                    <th className="px-6 py-3 text-right">Debit (₹)</th>
                   </tr>
                   
                   <BreakdownRow label="Provident Fund (PF)" subLabel="Employee Contribution" value={b.pf} type="minus" />
@@ -197,13 +200,13 @@ export default function SalaryStructure() {
                   <BreakdownRow label="Professional Tax (PT)" value={b.pt} type="minus" />
                   
                   {/* TOTAL NET TAKE HOME ROW */}
-                  <tr className="bg-indigo-600 text-white">
-                    <td className="px-8 py-8">
-                       <p className="font-black text-xl tracking-tight">Net Take-Home</p>
-                       <p className="text-[10px] opacity-80 font-bold uppercase tracking-widest">Estimated Monthly Payout</p>
+                  <tr className="bg-primary text-white">
+                    <td className="px-6 py-4">
+                      <p className="font-semibold text-base text-white">Net Take-Home</p>
+                      <p className="text-xs text-yellow-300 font-medium">Estimated Monthly Payout</p>
                     </td>
-                    <td className="px-8 py-8 text-right">
-                       <span className="text-3xl font-black">{format(b.netPay)}</span>
+                    <td className="px-6 py-4 text-right">
+                      <span className="text-2xl font-bold text-yellow-400">{format(b.netPay)}</span>
                     </td>
                   </tr>
                 </tbody>
@@ -212,71 +215,69 @@ export default function SalaryStructure() {
           </div>
 
           {/* Compliance Card */}
-          <div className="p-6 bg-emerald-50/50 border border-emerald-100 rounded-3xl flex items-start gap-4">
-             <MdSecurity className="text-emerald-600 mt-1" size={26} />
-             <div>
-                <p className="text-xs font-black text-emerald-800 uppercase tracking-widest mb-1">Compliance Status: Active</p>
-                <p className="text-xs text-emerald-700/80 font-medium leading-relaxed">
-                  PF ({orgConfig.statutoryConfig.pf.employeeContribution}%) and HRA ({orgConfig.statutoryConfig.hra.percentageOfBasic}%) percentages are currently synced with your Organization's Statutory Setup. Last updated by Admin on {new Date().toLocaleDateString()}.
-                </p>
-             </div>
+          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-3">
+            <MdSecurity className="text-success mt-0.5 shrink-0" size={22} />
+            <div>
+              <p className="text-xs font-semibold text-emerald-900 uppercase tracking-wider mb-0.5">Compliance Status: Active</p>
+              <p className="text-xs text-emerald-800 leading-relaxed">
+                PF ({orgConfig?.statutoryConfig?.pf?.employeeContribution || 12}%) and HRA ({orgConfig?.statutoryConfig?.hra?.percentageOfBasic || 40}%) rates are currently synced with your Organization's Statutory Rules.
+              </p>
+            </div>
           </div>
         </div>
 
         {/* 3. RIGHT: VISUALIZATION & ANALYTICS */}
-        <div className="space-y-6">
-          <div className="relative overflow-hidden rounded-[2.5rem] p-0.5 bg-gradient-to-br from-indigo-500 to-purple-600 shadow-2xl shadow-indigo-100">
-            <div className="bg-white/95 backdrop-blur-md rounded-[2.3rem] p-8 text-center h-full">
-              <div className="flex items-center justify-center gap-2 mb-8">
-                 <MdTrendingUp className="text-indigo-600" size={22} />
-                 <h3 className="font-black text-slate-800 text-xs uppercase tracking-widest">Payout Analytics</h3>
-              </div>
+        <div className="space-y-5">
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm text-center">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <MdTrendingUp className="text-primary" size={20} />
+              <h3 className="font-semibold text-text-primary text-sm uppercase tracking-wider">Payout Analytics</h3>
+            </div>
 
-              <div className="h-64 w-full relative flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={chartData} cx="50%" cy="50%" innerRadius={70} outerRadius={95} paddingAngle={8} dataKey="value">
-                      {chartData.map((entry, idx) => (
-                        <Cell key={idx} fill={entry.color} stroke="none" />
-                      ))}
-                    </Pie>
-                    <RechartsTooltip 
-                       contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontWeight: '800', fontSize: '12px' }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Gross Gross</span>
-                  <span className="text-xl font-black text-slate-800 tracking-tighter">{format(b.monthlyGross)}</span>
-                </div>
+            <div className="h-60 w-full relative flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={chartData} cx="50%" cy="50%" innerRadius={65} outerRadius={90} paddingAngle={4} dataKey="value">
+                    {chartData.map((entry, idx) => (
+                      <Cell key={idx} fill={entry.color} stroke="#ffffff" strokeWidth={2} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    contentStyle={{ borderRadius: '8px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', fontWeight: '600', fontSize: '12px' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-[11px] font-medium text-text-muted uppercase">Gross Pay</span>
+                <span className="text-lg font-bold text-text-primary">{format(b.monthlyGross)}</span>
               </div>
+            </div>
 
-              {/* Legend List */}
-              <div className="mt-10 space-y-4">
-                {chartData.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: item.color }} />
-                      <span className="text-xs font-bold text-slate-500">{item.name}</span>
-                    </div>
-                    <span className="text-xs font-black text-slate-700 bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">
-                      {((item.value / b.monthlyGross) * 100).toFixed(0)}%
-                    </span>
+            {/* Legend List */}
+            <div className="mt-6 space-y-2.5">
+              {chartData.map((item, idx) => (
+                <div key={idx} className="flex justify-between items-center text-xs">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="font-medium text-text-secondary">{item.name}</span>
                   </div>
-                ))}
-              </div>
+                  <span className="font-semibold text-text-primary bg-muted px-2 py-0.5 rounded border border-gray-200">
+                    {((item.value / b.monthlyGross) * 100).toFixed(0)}%
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Quick Metrics */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-5 group hover:border-indigo-200 transition-all">
-             <div className="p-4 bg-indigo-50 text-indigo-600 rounded-2xl group-hover:scale-110 transition-transform">
-                <MdCalculate size={28} />
-             </div>
-             <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Annual CTC</p>
-                <p className="text-2xl font-black text-slate-800 tracking-tighter">{format(b.ctc)}</p>
-             </div>
+          <div className="bg-white p-5 rounded-xl border border-gray-200 border-l-4 border-l-success shadow-sm flex items-center gap-4">
+            <div className="p-3 bg-emerald-50 text-success rounded-lg border border-emerald-100">
+              <MdCalculate size={24} />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">Annual CTC</p>
+              <p className="text-xl font-bold text-text-primary">{format(b.ctc)}</p>
+            </div>
           </div>
         </div>
 
@@ -288,14 +289,14 @@ export default function SalaryStructure() {
 // Table Row Sub-component
 function BreakdownRow({ label, subLabel, value, type }) {
   return (
-    <tr className="hover:bg-slate-50/50 transition-colors group">
-      <td className="px-8 py-5">
-        <p className="font-bold text-slate-700 text-sm">{label}</p>
-        {subLabel && <p className="text-[10px] text-slate-400 font-bold uppercase">{subLabel}</p>}
+    <tr className="hover:bg-gray-50/80 transition-colors">
+      <td className="px-6 py-3.5">
+        <p className="font-medium text-text-primary text-sm">{label}</p>
+        {subLabel && <p className="text-xs text-text-muted">{subLabel}</p>}
       </td>
-      <td className="px-8 py-5 text-right">
-        <span className={`text-sm font-black ${type === 'plus' ? 'text-emerald-600' : 'text-rose-500'}`}>
-          {type === 'plus' ? '+' : '-'} {value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+      <td className="px-6 py-3.5 text-right">
+        <span className={`text-sm font-semibold ${type === 'plus' ? 'text-success' : 'text-danger'}`}>
+          {type === 'plus' ? '+' : '-'} ₹{Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
         </span>
       </td>
     </tr>

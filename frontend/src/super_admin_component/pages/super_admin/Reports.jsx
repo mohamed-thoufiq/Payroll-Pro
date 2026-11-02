@@ -5,6 +5,7 @@ import {
   MdPieChart, MdTrendingUp, MdCalendarToday 
 } from "react-icons/md";
 import { downloadReport } from "../../../utils/downloadReport";
+import { API_URL } from "../../../config/api.js";
 
 export default function Reports() {
   const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
@@ -18,7 +19,7 @@ export default function Reports() {
         setLoading(true);
         const token = localStorage.getItem("token");
         // We call a simple endpoint to get the status of the payroll run
-        const res = await axios.get(`http://localhost:5000/api/payroll/payroll-status?month=${month}`, {
+        const res = await axios.get(`${API_URL}/api/payroll/payroll-status?month=${month}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -77,35 +78,35 @@ export default function Reports() {
   ];
 
   return (
-    <div className="p-6">
-      {/* 1. Month Selection Header */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+    <div className="space-y-6">
+      {/* 1. Header & Month Selection */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-xl shadow-sm border border-gray-200">
         <div>
-          <h2 className="text-xl font-black text-slate-800">Payroll Reports</h2>
-          <p className="text-sm text-slate-500">Select a month to download compliance and accounting files.</p>
+          <h2 className="text-xl font-semibold text-text-primary">Payroll Reports</h2>
+          <p className="text-sm text-text-secondary mt-0.5">Select a month to download compliance and accounting files.</p>
         </div>
 
-        <div className="flex items-center gap-3 bg-slate-50 p-2 rounded-xl border border-slate-200">
-          <MdCalendarToday className="text-indigo-600 ml-2" />
+        <div className="flex items-center gap-2.5 bg-muted px-3.5 py-2 rounded-lg border border-gray-200 self-start sm:self-auto">
+          <MdCalendarToday className="text-primary text-base" />
           <input 
             type="month" 
             value={month}
             onChange={(e) => setMonth(e.target.value)}
-            className="bg-transparent border-none outline-none font-bold text-slate-700 cursor-pointer"
+            className="bg-transparent border-none outline-none font-medium text-sm text-text-primary cursor-pointer"
           />
         </div>
       </div>
 
       {/* 2. Lock Warning */}
       {!isLocked && !loading && (
-        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3 text-amber-700">
-          <div className="animate-pulse h-2 w-2 rounded-full bg-amber-500" />
-          <span className="text-sm font-medium">Payroll for {month} is not yet finalized/locked. Reports are currently disabled.</span>
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3 text-amber-800 text-sm">
+          <div className="h-2.5 w-2.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
+          <span>Payroll for <strong>{month}</strong> is not yet finalized/locked. Reports are disabled until payroll is locked.</span>
         </div>
       )}
 
-      {/* 3. Grid of Cards */}
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-300 ${!isLocked ? 'opacity-50 grayscale-[0.5]' : 'opacity-100'}`}>
+      {/* 3. Grid of Report Cards */}
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 transition-opacity duration-300 ${!isLocked ? 'opacity-55' : 'opacity-100'}`}>
         {reportCards.map((r, i) => (
           <ReportActionCard 
             key={i} 
@@ -119,30 +120,39 @@ export default function Reports() {
   );
 }
 
-function ReportActionCard({ title, icon, category, gradient, onClick, disabled }) {
+function ReportActionCard({ title, icon, category, onClick, disabled }) {
   return (
     <div
       onClick={disabled ? null : onClick}
-      className={`group relative overflow-hidden rounded-2xl p-0.5 bg-gradient-to-br ${gradient}
-      shadow-md transition-all ${disabled ? 'cursor-not-allowed' : 'hover:scale-[1.02] cursor-pointer'}`}
+      className={`bg-white border border-gray-200 rounded-xl p-5 shadow-sm transition-all flex flex-col justify-between ${
+        disabled 
+          ? 'cursor-not-allowed opacity-80' 
+          : 'hover:border-primary hover:shadow-md cursor-pointer group'
+      }`}
     >
-      <div className="bg-white/95 backdrop-blur-md rounded-[14px] p-6 h-full flex flex-col relative">
+      <div>
         <div className="flex justify-between items-start mb-4">
-          <div className={`p-3 rounded-xl bg-gradient-to-br ${gradient} text-white shadow-lg`}>
+          <div className="p-2.5 rounded-lg bg-blue-50 text-primary border border-blue-100 text-xl group-hover:bg-primary group-hover:text-white transition-colors">
             {icon}
           </div>
-          <span className="text-[9px] font-black px-2 py-1 bg-slate-100 text-slate-500 rounded-md uppercase">
+          <span className="text-xs font-medium px-2.5 py-1 bg-muted text-text-secondary rounded-full">
             {category}
           </span>
         </div>
 
-        <h3 className="text-base font-black text-slate-800 mb-2">{title}</h3>
+        <h3 className="text-base font-semibold text-text-primary mb-1 group-hover:text-primary transition-colors">
+          {title}
+        </h3>
+        <p className="text-xs text-text-muted">
+          Official statutory and payroll export file
+        </p>
+      </div>
 
-        <div className={`mt-6 flex items-center gap-2 ${disabled ? 'text-slate-400' : 'text-indigo-600'}`}>
-          <span className="text-[10px] font-black uppercase">
-            {disabled ? "Locked" : "Generate Report"}
-          </span>
-        </div>
+      <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+        <span className={`text-xs font-semibold ${disabled ? 'text-text-muted' : 'text-primary group-hover:underline'}`}>
+          {disabled ? "Locked" : "Download Report (XLSX) →"}
+        </span>
+        <span className="text-[10px] text-text-muted uppercase font-mono">Excel</span>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { encryptField, decryptField } from '../utils/crypto.js';
 
 const userSchema = new mongoose.Schema(
   {
@@ -72,8 +73,24 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre('save', async function () {
-  if (!this.isModified('password')) return;
-  this.password = await bcrypt.hash(this.password, 10);
+  if (this.isModified('password') && this.password) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  if (this.employeeDetails?.personal?.pan) {
+    this.employeeDetails.personal.pan = encryptField(this.employeeDetails.personal.pan);
+  }
+  if (this.employeeDetails?.payment?.details?.accountNumber) {
+    this.employeeDetails.payment.details.accountNumber = encryptField(this.employeeDetails.payment.details.accountNumber);
+  }
+});
+
+userSchema.post(['init', 'save'], function (doc) {
+  if (doc?.employeeDetails?.personal?.pan) {
+    doc.employeeDetails.personal.pan = decryptField(doc.employeeDetails.personal.pan);
+  }
+  if (doc?.employeeDetails?.payment?.details?.accountNumber) {
+    doc.employeeDetails.payment.details.accountNumber = decryptField(doc.employeeDetails.payment.details.accountNumber);
+  }
 });
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
@@ -81,3 +98,4 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 };
 
 export default mongoose.model('User', userSchema);
+
