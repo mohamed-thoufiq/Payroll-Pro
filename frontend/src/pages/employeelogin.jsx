@@ -1,8 +1,9 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
+import { API_URL } from "../config/api.js";
 
 const QUICK_ROLES = [
   { role: "Employee", email: "rizwan@gmail.com", isEmployee: true, color: "hover:bg-primary/10 hover:border-primary text-primary bg-primary/5 border-primary/20" },
@@ -14,9 +15,26 @@ const EmployeeLogin = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [signingInRole, setSigningInRole] = useState(null);
+  const [isWakingServer, setIsWakingServer] = useState(false);
 
   const navigate = useNavigate();
   const { employeeLogin } = useContext(AuthContext);
+
+  // 🚀 Pre-warm Render backend on initial visit
+  useEffect(() => {
+    fetch(`${API_URL}/`).catch(() => {});
+  }, []);
+
+  // ⏳ Detect cold-start if request takes longer than 2.5s
+  useEffect(() => {
+    let timer;
+    if (loading) {
+      timer = setTimeout(() => setIsWakingServer(true), 2500);
+    } else {
+      setIsWakingServer(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -116,6 +134,17 @@ const EmployeeLogin = () => {
               {signingInRole === "Employee" ? "Signing in as Employee..." : "1-Click sign in as Employee"}
             </button>
           </div>
+
+          {/* Cold-start Alert */}
+          {isWakingServer && (
+            <div className="p-3 bg-amber-50 border border-amber-300 text-amber-900 text-xs rounded-xl flex items-start gap-2.5 animate-pulse shadow-sm">
+              <span className="text-base leading-none">⏳</span>
+              <div>
+                <span className="font-semibold block">Connecting to cloud server...</span>
+                <p className="text-[11px] text-amber-700 mt-0.5">Free-tier backend sleeps when idle. Waking up the container takes ~20–30s.</p>
+              </div>
+            </div>
+          )}
 
           {/* Error */}
           {error && (

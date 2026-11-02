@@ -14,6 +14,7 @@ export default function Dashboard() {
   const { token, user } = useContext(AuthContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isWakingServer, setIsWakingServer] = useState(false);
   const [showAllLegend, setShowAllLegend] = useState(false);
 
   const role = user?.role?.toLowerCase().replace(/\s+/g, '') || 'superadmin';
@@ -49,6 +50,17 @@ export default function Dashboard() {
     ? ['#DC2626', '#EF4444', '#F87171', '#B91C1C', '#64748B', '#475569']
     : ['#EAB308', '#F59E0B', '#FBBF24', '#71717A', '#3F3F46', '#D97706'];
 
+  // ⏳ Detect cold-start on dashboard fetch
+  useEffect(() => {
+    let timer;
+    if (loading) {
+      timer = setTimeout(() => setIsWakingServer(true), 2500);
+    } else {
+      setIsWakingServer(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -66,10 +78,85 @@ export default function Dashboard() {
     if (token) fetchData();
   }, [token]);
 
+  // ⚡ Instant App Shell / Skeleton Dashboard while backend is booting/loading
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      <div className="space-y-6 animate-in fade-in duration-200">
+        {/* Header Skeleton */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">{dashboardTitle}</h1>
+            <p className="text-xs text-gray-500 mt-0.5">{dashboardSubtitle}</p>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-lg text-xs text-gray-400">
+            <Calendar size={14} />
+            <span>Synchronizing live data...</span>
+          </div>
+        </div>
+
+        {/* Cold Start Notice */}
+        {isWakingServer && (
+          <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-xl flex items-start sm:items-center gap-3 text-amber-900 text-xs shadow-sm animate-pulse">
+            <span className="text-lg leading-none">⏳</span>
+            <div>
+              <span className="font-semibold block">Connecting to cloud server...</span>
+              <p className="text-[11px] text-amber-700 mt-0.5">
+                Free-tier cloud backend wakes up after inactivity (~20–30s). The dashboard shell is active and will auto-populate as soon as data arrives.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* 4 Shimmer KPI Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { label: "Active Employees", sub: "Registered Staff" },
+            { label: "Gross Payroll", sub: "Monthly Calculation" },
+            { label: "Net Payable", sub: "Disbursement Pool" },
+            { label: "Total Deductions", sub: "PF, Taxes & ESIC" }
+          ].map((card, i) => (
+            <div key={i} className="bg-white border border-gray-200/90 rounded-xl p-5 shadow-sm space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-medium text-gray-400">{card.label}</span>
+                <div className="w-8 h-8 rounded-lg bg-gray-100 animate-pulse"></div>
+              </div>
+              <div className="h-7 w-28 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-3 w-20 bg-gray-100 rounded animate-pulse"></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Chart Skeletons */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-white border border-gray-200/90 rounded-xl p-5 shadow-sm space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-800">Payroll Trend</h3>
+                <p className="text-xs text-gray-400">Past 6 payroll cycles</p>
+              </div>
+              <div className="h-6 w-16 bg-gray-100 rounded animate-pulse"></div>
+            </div>
+            <div className="h-[260px] bg-gray-50/70 rounded-lg border border-dashed border-gray-200 flex items-end justify-around p-6 gap-3">
+              {[45, 65, 35, 80, 55, 70].map((h, idx) => (
+                <div key={idx} className="w-10 bg-gray-200 rounded-t animate-pulse" style={{ height: `${h}%` }}></div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200/90 rounded-xl p-5 shadow-sm space-y-4">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-800">Department Spend</h3>
+              <p className="text-xs text-gray-400">Cost allocation breakdown</p>
+            </div>
+            <div className="h-[200px] flex items-center justify-center">
+              <div className="w-36 h-36 rounded-full border-8 border-gray-100 border-t-primary/30 animate-spin"></div>
+            </div>
+            <div className="space-y-2 pt-2 border-t border-gray-100">
+              <div className="h-3 w-full bg-gray-100 rounded animate-pulse"></div>
+              <div className="h-3 w-3/4 bg-gray-100 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

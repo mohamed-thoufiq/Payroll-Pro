@@ -8,6 +8,7 @@ import { API_URL } from "../../../config/api.js";
 export default function Dashboard() {
   const { user, token } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
+  const [isWakingServer, setIsWakingServer] = useState(false);
   const [latestPayslip, setLatestPayslip] = useState(null);
   const [stats, setStats] = useState({
     netPay: 0,
@@ -16,6 +17,17 @@ export default function Dashboard() {
     count: 0,
     monthName: ""
   });
+
+  // ⏳ Detect cold-start on employee dashboard fetch
+  useEffect(() => {
+    let timer;
+    if (loading) {
+      timer = setTimeout(() => setIsWakingServer(true), 2500);
+    } else {
+      setIsWakingServer(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   useEffect(() => {
     if (!token) return;
@@ -49,10 +61,45 @@ export default function Dashboard() {
     fetchDashboardData();
   }, [token]);
 
+  // ⚡ Instant App Shell / Skeleton Dashboard
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      <div className="space-y-6 animate-in fade-in duration-200">
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold text-text-primary tracking-tight">
+            Payroll Overview
+          </h2>
+          <p className="text-sm text-text-secondary">
+            Synchronizing latest payslip records for {user?.name || 'Employee'}...
+          </p>
+        </div>
+
+        {isWakingServer && (
+          <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-xl flex items-start sm:items-center gap-3 text-amber-900 text-xs shadow-sm animate-pulse">
+            <span className="text-lg leading-none">⏳</span>
+            <div>
+              <span className="font-semibold block">Connecting to cloud server...</span>
+              <p className="text-[11px] text-amber-700 mt-0.5">
+                Free-tier server is spinning up (~20–30s). Your employee dashboard will appear automatically.
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {["Net Pay", "Gross Salary", "Total Deductions", "Payslips Available"].map((label, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-3">
+              <div className="h-3 w-20 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-7 w-28 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-2.5 w-16 bg-gray-100 rounded animate-pulse"></div>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4">
+          <div className="h-4 w-36 bg-gray-200 rounded animate-pulse"></div>
+          <div className="h-32 bg-gray-50 rounded-lg border border-dashed border-gray-200 animate-pulse"></div>
+        </div>
       </div>
     );
   }

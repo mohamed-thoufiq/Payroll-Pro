@@ -18,11 +18,28 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [signingInRole, setSigningInRole] = useState(null);
+  const [isWakingServer, setIsWakingServer] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const { login, employeeLogin } = useContext(AuthContext);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  // 🚀 Pre-warm Render backend on initial visit
+  useEffect(() => {
+    fetch(`${API_URL}/`).catch(() => {});
+  }, []);
+
+  // ⏳ Detect cold-start if request takes longer than 2.5s
+  useEffect(() => {
+    let timer;
+    if (loading) {
+      timer = setTimeout(() => setIsWakingServer(true), 2500);
+    } else {
+      setIsWakingServer(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const roleToPath = (role) => role.toLowerCase().replace(/\s+/g, '');
 
@@ -203,6 +220,16 @@ const Login = () => {
               ))}
             </div>
           </div>
+
+          {isWakingServer && (
+            <div className="mb-3 p-3 bg-amber-50 border border-amber-300 text-amber-900 text-xs rounded-xl flex items-start gap-2.5 animate-pulse shadow-sm">
+              <span className="text-base leading-none">⏳</span>
+              <div>
+                <span className="font-semibold block">Connecting to cloud server...</span>
+                <p className="text-[11px] text-amber-700 mt-0.5">Free-tier backend sleeps when idle. Waking up the container takes ~20–30s.</p>
+              </div>
+            </div>
+          )}
 
           {error && (
             <div className="mb-3 p-2.5 bg-red-50 border-l-4 border-red-500 text-red-700 text-xs rounded-r-lg">
